@@ -16,7 +16,7 @@ using RayCast.Core.Models;
 
 namespace RayCast.Core
 {
-    public class Game : GameWindow
+    public class Engine : GameWindow
     {
 
         private static double TARGET_UPDATES_PER_SECOND = 30;
@@ -38,7 +38,7 @@ namespace RayCast.Core
 
         private Dictionary<int, double> _distLookUp;
 
-        public Game(Size windowSize) : base(windowSize.Width, windowSize.Height)
+        public Engine(Size windowSize) : base(windowSize.Width, windowSize.Height)
         {
             _windowSize = windowSize;
         }
