@@ -146,38 +146,7 @@ namespace RayCast.Core
             _timeFromLastUpdate += e.Time;
             if (_timeFromLastUpdate >= 1 / TARGET_UPDATES_PER_SECOND)
             {
-                //update player pos
-                if (_player.MovingState == MovingState.Forward)
-                {
-                    if (_worldMap[(int)(_player.PosX + _player.DirX * MOVEMENT_SPEED), (int)_player.PosY] == 0) _player.PosX += _player.DirX * MOVEMENT_SPEED;
-                    if (_worldMap[(int)_player.PosX, (int)(_player.PosY + _player.DirY * MOVEMENT_SPEED)] == 0) _player.PosY += _player.DirY * MOVEMENT_SPEED;
-                }
-
-                if (_player.MovingState == MovingState.Backward)
-                {
-                    if (_worldMap[(int)(_player.PosX - _player.DirX * MOVEMENT_SPEED), (int)_player.PosY] == 0) _player.PosX -= _player.DirX * MOVEMENT_SPEED;
-                    if (_worldMap[(int)_player.PosX, (int)(_player.PosY - _player.DirY * MOVEMENT_SPEED)] == 0) _player.PosY -= _player.DirY * MOVEMENT_SPEED;
-                }
-
-                if (_player.TurningState == TurningState.Right)
-                {
-                    double oldDirX = _player.DirX;
-                    _player.DirX = _player.DirX * Math.Cos(-ROT_SPEED) - _player.DirY * Math.Sin(-ROT_SPEED);
-                    _player.DirY = oldDirX * Math.Sin(-ROT_SPEED) + _player.DirY * Math.Cos(-ROT_SPEED);
-                    double oldPlaneX = _camera.PlaneX;
-                    _camera.PlaneX = _camera.PlaneX * Math.Cos(-ROT_SPEED) - _camera.PlaneY * Math.Sin(-ROT_SPEED);
-                    _camera.PlaneY = oldPlaneX * Math.Sin(-ROT_SPEED) + _camera.PlaneY * Math.Cos(-ROT_SPEED);
-                }
-
-                if (_player.TurningState == TurningState.Left)
-                {
-                    double oldDirX = _player.DirX;
-                    _player.DirX = _player.DirX * Math.Cos(ROT_SPEED) - _player.DirY * Math.Sin(ROT_SPEED);
-                    _player.DirY = oldDirX * Math.Sin(ROT_SPEED) + _player.DirY * Math.Cos(ROT_SPEED);
-                    double oldPlaneX = _camera.PlaneX;
-                    _camera.PlaneX = _camera.PlaneX * Math.Cos(ROT_SPEED) - _camera.PlaneY * Math.Sin(ROT_SPEED);
-                    _camera.PlaneY = oldPlaneX * Math.Sin(ROT_SPEED) + _camera.PlaneY * Math.Cos(ROT_SPEED);
-                }
+                UpdatePlayerPosition();
 
                 _timeFromLastUpdate = 0;
             }
@@ -482,6 +451,42 @@ namespace RayCast.Core
                         }
                     }
                 }
+            }
+        }
+
+        private void UpdatePlayerPosition()
+        {
+            //update player pos
+            if (_player.MovingState == MovingState.Forward)
+            {
+                if (_worldMap[(int)(_player.PosX + _player.DirX * MOVEMENT_SPEED), (int)_player.PosY] == 0) _player.PosX += _player.DirX * MOVEMENT_SPEED;
+                if (_worldMap[(int)_player.PosX, (int)(_player.PosY + _player.DirY * MOVEMENT_SPEED)] == 0) _player.PosY += _player.DirY * MOVEMENT_SPEED;
+            }
+
+            if (_player.MovingState == MovingState.Backward)
+            {
+                if (_worldMap[(int)(_player.PosX - _player.DirX * MOVEMENT_SPEED), (int)_player.PosY] == 0) _player.PosX -= _player.DirX * MOVEMENT_SPEED;
+                if (_worldMap[(int)_player.PosX, (int)(_player.PosY - _player.DirY * MOVEMENT_SPEED)] == 0) _player.PosY -= _player.DirY * MOVEMENT_SPEED;
+            }
+
+            if (_player.TurningState == TurningState.Right)
+            {
+                double oldDirX = _player.DirX;
+                _player.DirX = _player.DirX * Math.Cos(-ROT_SPEED) - _player.DirY * Math.Sin(-ROT_SPEED);
+                _player.DirY = oldDirX * Math.Sin(-ROT_SPEED) + _player.DirY * Math.Cos(-ROT_SPEED);
+                double oldPlaneX = _camera.PlaneX;
+                _camera.PlaneX = _camera.PlaneX * Math.Cos(-ROT_SPEED) - _camera.PlaneY * Math.Sin(-ROT_SPEED);
+                _camera.PlaneY = oldPlaneX * Math.Sin(-ROT_SPEED) + _camera.PlaneY * Math.Cos(-ROT_SPEED);
+            }
+
+            if (_player.TurningState == TurningState.Left)
+            {
+                double oldDirX = _player.DirX;
+                _player.DirX = _player.DirX * Math.Cos(ROT_SPEED) - _player.DirY * Math.Sin(ROT_SPEED);
+                _player.DirY = oldDirX * Math.Sin(ROT_SPEED) + _player.DirY * Math.Cos(ROT_SPEED);
+                double oldPlaneX = _camera.PlaneX;
+                _camera.PlaneX = _camera.PlaneX * Math.Cos(ROT_SPEED) - _camera.PlaneY * Math.Sin(ROT_SPEED);
+                _camera.PlaneY = oldPlaneX * Math.Sin(ROT_SPEED) + _camera.PlaneY * Math.Cos(ROT_SPEED);
             }
         }
 
