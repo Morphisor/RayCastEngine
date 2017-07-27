@@ -11,7 +11,7 @@ namespace RayCastEngine
     {
         static void Main(string[] args)
         {
-            using (Engine window = new Engine(new System.Drawing.Size(480, 360)))
+            using (Engine window = new Engine(new System.Drawing.Size(740, 360)))
             {
                 window.Title = "RayCast Engine";
                 window.Run();

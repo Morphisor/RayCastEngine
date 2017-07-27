@@ -28,6 +28,9 @@ namespace RayCast.Core
         private int[,] _worldMap;
 
         private readonly Size _windowSize;
+        private readonly Size _viewPort;
+        private readonly Point _mimiMapPosition;
+
         private double _timeFromLastUpdate;
         private double _fps;
         private long _renderingCalculation;
@@ -46,12 +49,14 @@ namespace RayCast.Core
         public Engine(Size windowSize) : base(windowSize.Width, windowSize.Height)
         {
             _windowSize = windowSize;
+            _viewPort = new Size(_windowSize.Width - 260, windowSize.Height);
+            _mimiMapPosition = new Point(_viewPort.Width + 10, 10);
         }
 
         protected override void OnLoad(EventArgs e)
         {
-            _drawingBuffer = new Pixel[_windowSize.Width * _windowSize.Height + 1];
-            _zBuffer = new double[_windowSize.Width];
+            _drawingBuffer = new Pixel[_viewPort.Width * _viewPort.Height + 1];
+            _zBuffer = new double[_viewPort.Width];
 
             //map setup
             _worldMap = new int[,]
@@ -136,8 +141,8 @@ namespace RayCast.Core
 
             //init lookup
             _distLookUp = new Dictionary<int, double>();
-            for (int y = 0; y < _windowSize.Height; y++)
-                _distLookUp.Add(y, _windowSize.Height / (2.0 * y - _windowSize.Height));
+            for (int y = 0; y < _viewPort.Height; y++)
+                _distLookUp.Add(y, _viewPort.Height / (2.0 * y - _viewPort.Height));
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -191,10 +196,30 @@ namespace RayCast.Core
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(Color.Black);
-
+            
             DrawMap();
+            DrawMinimap(_mimiMapPosition, 10);
 
             SwapBuffers();
+        }
+
+        private void DrawMinimap(Point miniMapPosition, int blockSize)
+        {
+            Color blockColor = Color.White;
+            for (int y = 0; y < _worldMap.GetLength(0); y++)
+            {
+                for (int x = 0; x < _worldMap.GetLength(1); x++)
+                {
+                    if (_worldMap[y, x] != 0)
+                    {
+                        int xStart = x * blockSize + miniMapPosition.X;
+                        int yStart = y * blockSize + miniMapPosition.Y;
+                        Draw.DrawRectangle(new Rectangle(xStart, yStart, blockSize, blockSize), Color.DarkRed);
+                    }
+                }
+            }
+            Point mapPlayer = new Point((int)Math.Floor((_player.PosY * 64) / 64 * blockSize) + miniMapPosition.X, (int)Math.Floor((_player.PosX * 64) / 64 * blockSize) + miniMapPosition.Y);
+            Draw.DrawCircle(mapPlayer, blockSize, Color.Red);
         }
 
         private void DrawMap()
@@ -204,7 +229,7 @@ namespace RayCast.Core
             int[] spriteOrder = new int[NUM_SPRITES];
             double[] spriteDistance = new double[NUM_SPRITES];
 
-            for (int x = 0; x < _windowSize.Width; x++)
+            for (int x = 0; x < _viewPort.Width; x++)
             {
                 DrawVerticalLine(x, spriteOrder, spriteDistance);
             }
@@ -221,7 +246,7 @@ namespace RayCast.Core
 
         private void DrawVerticalLine(int x, int[] spriteOrder, double[] spriteDistance)
         {
-            double cameraX = 2 * x / (double)_windowSize.Width - 1; //x-coordinate in camera space
+            double cameraX = 2 * x / (double)_viewPort.Width - 1; //x-coordinate in camera space
             Ray ray = new Ray(_player.PosX, _player.PosY, (_player.DirX + _camera.PlaneX * cameraX), (_player.DirY + _camera.PlaneY * cameraX));
 
             double perpWallDist;
@@ -232,13 +257,13 @@ namespace RayCast.Core
             else perpWallDist = (ray.MapY - ray.RayPosY + (1 - step.Y) / 2) / ray.RayDirY;
 
             //Height of line to draw on screen
-            int lineHeight = (int)(_windowSize.Height / perpWallDist);
+            int lineHeight = (int)(_viewPort.Height / perpWallDist);
 
             //calculate lowest and highest pixel
-            int drawStart = -lineHeight / 2 + _windowSize.Height / 2;
+            int drawStart = -lineHeight / 2 + _viewPort.Height / 2;
             if (drawStart < 0) drawStart = 0;
-            int drawEnd = lineHeight / 2 + _windowSize.Height / 2;
-            if (drawEnd >= _windowSize.Height) drawEnd = _windowSize.Height - 1;
+            int drawEnd = lineHeight / 2 + _viewPort.Height / 2;
+            if (drawEnd >= _viewPort.Height) drawEnd = _viewPort.Height - 1;
 
             //TEXTURING CALCULATIONS
             int texNum = _worldMap[ray.MapX, ray.MapY] - 1; // -1 to use the index 0 of textures
@@ -255,14 +280,14 @@ namespace RayCast.Core
 
             for (int y = drawStart; y < drawEnd; y++)
             {
-                long d = y * 256 - _windowSize.Height * 128 + lineHeight * 128; //magic code that gets the right color -.-
+                long d = y * 256 - _viewPort.Height * 128 + lineHeight * 128; //magic code that gets the right color -.-
                 int texY = (int)((d * _textures.TexturesHeight) / lineHeight) / 256;
                 Pixel pixelToDraw = new Pixel();
                 pixelToDraw.X = x;
                 pixelToDraw.Y = y;
                 pixelToDraw.Color = _textures[texNum][_textures.TexturesHeight * texY + texX].Color;
                 if (ray.Side == 1) pixelToDraw.Color = Color.FromArgb(pixelToDraw.Color.R / 2, pixelToDraw.Color.G / 2, pixelToDraw.Color.B / 2);
-                _drawingBuffer[(_windowSize.Height * x) + y] = pixelToDraw;
+                _drawingBuffer[(_viewPort.Height * x) + y] = pixelToDraw;
             }
 
             //ZBUFFER FOR SRPITE CASTING
@@ -306,10 +331,10 @@ namespace RayCast.Core
             distWall = perpWallDist;
             distPlayer = 0.0;
 
-            if (drawEnd < 0) drawEnd = _windowSize.Height; //safety
+            if (drawEnd < 0) drawEnd = _viewPort.Height; //safety
 
             //draw the floor from drawEnd to the bottom of the screen
-            for (int y = drawEnd + 1; y < _windowSize.Height; y++)
+            for (int y = drawEnd + 1; y < _viewPort.Height; y++)
             {
                 currentDist = _distLookUp[y]; //using precalculated lookuptable
 
@@ -326,13 +351,13 @@ namespace RayCast.Core
                 pixelToDraw.X = x;
                 pixelToDraw.Y = y;
                 pixelToDraw.Color = _textures[6][_textures.TexturesWidth * floorTexY + floorTexX].Color;
-                drawingBuffer[_windowSize.Height * x + y] = pixelToDraw;
+                drawingBuffer[_viewPort.Height * x + y] = pixelToDraw;
 
                 pixelToDraw = new Pixel();
                 pixelToDraw.X = x;
-                pixelToDraw.Y = _windowSize.Height - y;
+                pixelToDraw.Y = _viewPort.Height - y;
                 pixelToDraw.Color = _textures[1][_textures.TexturesWidth * floorTexY + floorTexX].Color;
-                drawingBuffer[_windowSize.Height * x + (_windowSize.Height - y)] = pixelToDraw;
+                drawingBuffer[_viewPort.Height * x + (_viewPort.Height - y)] = pixelToDraw;
             }
         }
 
@@ -412,21 +437,21 @@ namespace RayCast.Core
                 double transformX = invDet * (_player.DirY * spriteX - _player.DirX * spriteY);
                 double transformY = invDet * (-_camera.PlaneY * spriteX + _camera.PlaneX * spriteY);
 
-                int spriteScreenX = (int)((_windowSize.Width / 2) * (1 + transformX / transformY));
+                int spriteScreenX = (int)((_viewPort.Width / 2) * (1 + transformX / transformY));
 
                 //calculate height of the sprite on screen
-                int spriteHeight = Math.Abs((int)(_windowSize.Height / (transformY)));
-                int drawStartY = -spriteHeight / 2 + _windowSize.Height / 2;
+                int spriteHeight = Math.Abs((int)(_viewPort.Height / (transformY)));
+                int drawStartY = -spriteHeight / 2 + _viewPort.Height / 2;
                 if (drawStartY < 0) drawStartY = 0;
-                int drawEndY = spriteHeight / 2 + _windowSize.Height / 2;
-                if (drawEndY >= _windowSize.Height) drawEndY = _windowSize.Height - 1;
+                int drawEndY = spriteHeight / 2 + _viewPort.Height / 2;
+                if (drawEndY >= _viewPort.Height) drawEndY = _viewPort.Height - 1;
 
                 //calculate width of the sprite
-                int spriteWidth = Math.Abs((int)(_windowSize.Height / (transformY)));
+                int spriteWidth = Math.Abs((int)(_viewPort.Height / (transformY)));
                 int drawStartX = -spriteWidth / 2 + spriteScreenX;
                 if (drawStartX < 0) drawStartX = 0;
                 int drawEndX = spriteWidth / 2 + spriteScreenX;
-                if (drawEndX >= _windowSize.Width) drawEndX = _windowSize.Width - 1;
+                if (drawEndX >= _viewPort.Width) drawEndX = _viewPort.Width - 1;
 
                 //loop through every vertical stripe
                 for (int stripe = drawStartX; stripe < drawEndX; stripe++)
@@ -437,17 +462,17 @@ namespace RayCast.Core
                     //2) it's on the screen (left)
                     //3) it's on the screen (right)
                     //4) ZBuffer, with perpendicular distance
-                    if (transformY > 0 && stripe > 0 && stripe < _windowSize.Width && transformY < _zBuffer[stripe])
+                    if (transformY > 0 && stripe > 0 && stripe < _viewPort.Width && transformY < _zBuffer[stripe])
                     {
                         for (int y = drawStartY; y < drawEndY; y++) //for every pixel of the current stripe
                         {
-                            long d = (y) * 256 - _windowSize.Height * 128 + spriteHeight * 128; //magic code that gets the right color -.-
+                            long d = (y) * 256 - _viewPort.Height * 128 + spriteHeight * 128; //magic code that gets the right color -.-
                             int texY = (int)((d * _textures.TexturesHeight) / spriteHeight) / 256;
                             Pixel pixelToDraw = new Pixel();
                             pixelToDraw.Y = y;
                             pixelToDraw.X = stripe;
                             pixelToDraw.Color = _textures[_sprites[spriteOrder[i]].Texture][_textures.TexturesWidth * texY + texX].Color; //get current color from the texture
-                            if (pixelToDraw.Color != Color.FromArgb(0, 0, 0)) _drawingBuffer[_windowSize.Height * stripe + y] = pixelToDraw;
+                            if (pixelToDraw.Color != Color.FromArgb(0, 0, 0)) _drawingBuffer[_viewPort.Height * stripe + y] = pixelToDraw;
                         }
                     }
                 }
