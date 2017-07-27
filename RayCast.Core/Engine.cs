@@ -13,6 +13,7 @@ using RayCast.Core.Primitives;
 using RayCast.Core.Enums;
 using System.Runtime;
 using RayCast.Core.Models;
+using System.Diagnostics;
 
 namespace RayCast.Core
 {
@@ -29,9 +30,13 @@ namespace RayCast.Core
         private readonly Size _windowSize;
         private double _timeFromLastUpdate;
         private double _fps;
+        private long _renderingCalculation;
 
         private Textures _textures;
         private Sprite[] _sprites;
+
+        private Pixel[] _drawingBuffer;
+        private double[] _zBuffer;
 
         private Player _player;
         private Camera _camera;
@@ -45,6 +50,9 @@ namespace RayCast.Core
 
         protected override void OnLoad(EventArgs e)
         {
+            _drawingBuffer = new Pixel[_windowSize.Width * _windowSize.Height + 1];
+            _zBuffer = new double[_windowSize.Width];
+
             //map setup
             _worldMap = new int[,]
             {
@@ -179,7 +187,9 @@ namespace RayCast.Core
         {
             _fps = 1 / e.Time;
             Console.Clear();
-            Console.WriteLine(Math.Round(_fps, 2));
+            Console.WriteLine("FPS: " + Math.Round(_fps, 2));
+            Console.WriteLine("Rendering duration: " + _renderingCalculation + "ms");
+
             //render
             Render();
         }
@@ -220,22 +230,27 @@ namespace RayCast.Core
 
         private void DrawMap()
         {
-            Pixel[] drawingBuffer = new Pixel[_windowSize.Width * _windowSize.Height + 1];
-            double[] zBuffer = new double[_windowSize.Width];
+            Stopwatch renderTime = Stopwatch.StartNew();
+
             int[] spriteOrder = new int[NUM_SPRITES];
             double[] spriteDistance = new double[NUM_SPRITES];
 
             for (int x = 0; x < _windowSize.Width; x++)
             {
-                DrawVerticalLine(x, drawingBuffer, zBuffer, spriteOrder, spriteDistance);
+                DrawVerticalLine(x, spriteOrder, spriteDistance);
             }
             //SPRITE CASTING
-            DrawSprites(drawingBuffer, zBuffer, spriteOrder, spriteDistance);
+            DrawSprites(spriteOrder, spriteDistance);
 
-            Draw.DrawPixels(drawingBuffer);
+            _renderingCalculation = renderTime.ElapsedMilliseconds;
+            renderTime.Restart();
+
+            Draw.DrawPixels(_drawingBuffer);
+            Array.Clear(_drawingBuffer, 0, _drawingBuffer.Length);
+            Array.Clear(_zBuffer, 0, _zBuffer.Length);
         }
 
-        private void DrawVerticalLine(int x, Pixel[] drawingBuffer, double[] zBuffer, int[] spriteOrder, double[] spriteDistance)
+        private void DrawVerticalLine(int x, int[] spriteOrder, double[] spriteDistance)
         {
             double cameraX = 2 * x / (double)_windowSize.Width - 1; //x-coordinate in camera space
             Ray ray = new Ray(_player.PosX, _player.PosY, (_player.DirX + _camera.PlaneX * cameraX), (_player.DirY + _camera.PlaneY * cameraX));
@@ -278,14 +293,14 @@ namespace RayCast.Core
                 pixelToDraw.Y = y;
                 pixelToDraw.Color = _textures[texNum][_textures.TexturesHeight * texY + texX].Color;
                 if (ray.Side == 1) pixelToDraw.Color = Color.FromArgb(pixelToDraw.Color.R / 2, pixelToDraw.Color.G / 2, pixelToDraw.Color.B / 2);
-                drawingBuffer[(_windowSize.Height * x) + y] = pixelToDraw;
+                _drawingBuffer[(_windowSize.Height * x) + y] = pixelToDraw;
             }
 
             //ZBUFFER FOR SRPITE CASTING
-            zBuffer[x] = perpWallDist;
+            _zBuffer[x] = perpWallDist;
 
             //FLOOR CASTING
-            DrawPlanes(x, ray, wallX, perpWallDist, drawEnd, drawingBuffer);
+            DrawPlanes(x, ray, wallX, perpWallDist, drawEnd, _drawingBuffer);
         }
 
         private void DrawPlanes(int x, Ray ray, double wallX, double perpWallDist, int drawEnd, Pixel[] drawingBuffer)
@@ -406,7 +421,7 @@ namespace RayCast.Core
             return step;
         }
 
-        private void DrawSprites(Pixel[] drawingBuffer, double[] zBuffer, int[] spriteOrder, double[] spriteDistance)
+        private void DrawSprites(int[] spriteOrder, double[] spriteDistance)
         {
             //sort sprites from far to close
             for (int i = 0; i < NUM_SPRITES; i++)
@@ -453,7 +468,7 @@ namespace RayCast.Core
                     //2) it's on the screen (left)
                     //3) it's on the screen (right)
                     //4) ZBuffer, with perpendicular distance
-                    if (transformY > 0 && stripe > 0 && stripe < _windowSize.Width && transformY < zBuffer[stripe])
+                    if (transformY > 0 && stripe > 0 && stripe < _windowSize.Width && transformY < _zBuffer[stripe])
                     {
                         for (int y = drawStartY; y < drawEndY; y++) //for every pixel of the current stripe
                         {
@@ -463,7 +478,7 @@ namespace RayCast.Core
                             pixelToDraw.Y = y;
                             pixelToDraw.X = stripe;
                             pixelToDraw.Color = _textures[_sprites[spriteOrder[i]].Texture][_textures.TexturesWidth * texY + texX].Color; //get current color from the texture
-                            if (pixelToDraw.Color != Color.FromArgb(0, 0, 0)) drawingBuffer[_windowSize.Height * stripe + y] = pixelToDraw;
+                            if (pixelToDraw.Color != Color.FromArgb(0, 0, 0)) _drawingBuffer[_windowSize.Height * stripe + y] = pixelToDraw;
                         }
                     }
                 }
