@@ -37,6 +37,7 @@ namespace RayCast.Core
 
         private Textures _textures;
         private Sprite[] _sprites;
+        private Animator _animator;
 
         private Pixel[] _drawingBuffer;
         private double[] _zBuffer;
@@ -139,6 +140,10 @@ namespace RayCast.Core
             _textures.Add("pillar.png", 9);
             _textures.Add("greenlight.png", 10);
 
+            //animated sprited need to registered in the animator that is responsible to upgrate the sprite texture each frame
+            _animator = new Animator(_textures);
+            _animator.AddAnimatedSprite(new AnimatedSprite(_sprites[0], 5, new int[] { 0, 0, 0, 7, 7 }));
+
             //init lookup
             _distLookUp = new Dictionary<int, double>();
             for (int y = 0; y < _viewPort.Height; y++)
@@ -152,6 +157,7 @@ namespace RayCast.Core
             if (_timeFromLastUpdate >= 1 / TARGET_UPDATES_PER_SECOND)
             {
                 UpdatePlayerPosition();
+                _animator.UpdateCurrentFrame();
 
                 _timeFromLastUpdate = 0;
             }
