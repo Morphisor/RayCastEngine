@@ -9,14 +9,14 @@ namespace RayCast.Core.Primitives
     public class AnimatedSprite
     {
         public Sprite Sprite { get; set; }
-        public int NumberOfFrames { get; set; }
+        public int NumberOfFrames { get; }
         public int CurrentFrame { get; set; }
-        public int[] Textures { get; set; }
+        public int[] Textures { get; }
 
-        public AnimatedSprite(Sprite sprite, int numberOfFrames, int[] textureIds)
+        public AnimatedSprite(Sprite sprite, int[] textureIds)
         {
             this.Sprite = sprite;
-            this.NumberOfFrames = numberOfFrames;
+            this.NumberOfFrames = textureIds.Length;
             this.CurrentFrame = 0;
             this.Textures = textureIds;
         }

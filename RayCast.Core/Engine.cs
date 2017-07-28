@@ -140,9 +140,16 @@ namespace RayCast.Core
             _textures.Add("pillar.png", 9);
             _textures.Add("greenlight.png", 10);
 
+            _textures.Add("enemy1.png", 11);
+            _textures.Add("enemy2.png", 12);
+            _textures.Add("enemy3.png", 13);
+            _textures.Add("enemy4.png", 14);
+
+            _textures.Add("weapon.png", 15);
+
             //animated sprited need to registered in the animator that is responsible to upgrate the sprite texture each frame
             _animator = new Animator(_textures);
-            _animator.AddAnimatedSprite(new AnimatedSprite(_sprites[0], 5, new int[] { 0, 0, 0, 7, 7 }));
+            _animator.AddAnimatedSprite(new AnimatedSprite(_sprites[0], new int[] { 11, 11, 12, 12, 13, 13, 14, 14 }));
 
             //init lookup
             _distLookUp = new Dictionary<int, double>();
