@@ -196,9 +196,14 @@ namespace RayCast.Core
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(Color.Black);
-            
+
+            Stopwatch renderTime = Stopwatch.StartNew();
+
             DrawMap();
             DrawMinimap(_mimiMapPosition, 10);
+
+            _renderingCalculation = renderTime.ElapsedMilliseconds;
+            renderTime.Restart();
 
             SwapBuffers();
         }
@@ -226,8 +231,6 @@ namespace RayCast.Core
 
         private void DrawMap()
         {
-            Stopwatch renderTime = Stopwatch.StartNew();
-
             int[] spriteOrder = new int[NUM_SPRITES];
             double[] spriteDistance = new double[NUM_SPRITES];
 
@@ -237,9 +240,6 @@ namespace RayCast.Core
             }
             //SPRITE CASTING
             DrawSprites(spriteOrder, spriteDistance);
-
-            _renderingCalculation = renderTime.ElapsedMilliseconds;
-            renderTime.Restart();
 
             Draw.DrawPixels(_drawingBuffer);
             Array.Clear(_drawingBuffer, 0, _drawingBuffer.Length);
