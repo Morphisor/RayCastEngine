@@ -205,6 +205,7 @@ namespace RayCast.Core
 
         private void DrawMinimap(Point miniMapPosition, int blockSize)
         {
+            //draw map
             Color blockColor = Color.White;
             for (int y = 0; y < _worldMap.GetLength(0); y++)
             {
@@ -218,6 +219,7 @@ namespace RayCast.Core
                     }
                 }
             }
+            //draw player
             Point mapPlayer = new Point((int)Math.Floor((_player.PosY * 64) / 64 * blockSize) + miniMapPosition.X, (int)Math.Floor((_player.PosX * 64) / 64 * blockSize) + miniMapPosition.Y);
             Draw.DrawCircle(mapPlayer, blockSize, Color.Red);
         }
