@@ -50,6 +50,7 @@
     <Compile Include="Engine.cs" />
     <Compile Include="Models\Camera.cs" />
     <Compile Include="Models\Player.cs" />
+    <Compile Include="Models\Weapon.cs" />
     <Compile Include="Primitives\AnimatedSprite.cs" />
     <Compile Include="Primitives\Pixel.cs" />
     <Compile Include="Primitives\Ray.cs" />

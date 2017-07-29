@@ -44,6 +44,7 @@ namespace RayCast.Core
 
         private Player _player;
         private Camera _camera;
+        private Weapon _weapon;
 
         private Dictionary<int, double> _distLookUp;
 
@@ -151,6 +152,8 @@ namespace RayCast.Core
             _animator = new Animator(_textures);
             _animator.AddAnimatedSprite(new AnimatedSprite(_sprites[0], new int[] { 11, 11, 12, 12, 13, 13, 14, 14 }));
 
+            _weapon = new Weapon(64, 64, new int[] { 15 });
+
             //init lookup
             _distLookUp = new Dictionary<int, double>();
             for (int y = 0; y < _viewPort.Height; y++)
@@ -214,11 +217,47 @@ namespace RayCast.Core
 
             DrawMap();
             DrawMinimap(_mimiMapPosition, 10);
+            DrawWeapon();
+
+
+            Draw.DrawPixels(_drawingBuffer);
+            Array.Clear(_drawingBuffer, 0, _drawingBuffer.Length);
+            Array.Clear(_zBuffer, 0, _zBuffer.Length);
 
             _renderingCalculation = renderTime.ElapsedMilliseconds;
             renderTime.Restart();
 
             SwapBuffers();
+        }
+
+        private void DrawWeapon()
+        {
+            if (_weapon.IsShooting)
+                _weapon.UpdateNextFrame();
+
+            int startX = (_viewPort.Width / 2) - (_weapon.Width / 2);
+            int endX = (_viewPort.Width / 2) + (_weapon.Width / 2);
+
+            int startY = _viewPort.Height - _weapon.Height;
+            int endY = _viewPort.Height;
+
+            int texY = 0;
+            int texX = 0;
+
+            for (int x = startX; x < endX; x++)
+            {
+                for (int y = startY; y < endY; y++)
+                {
+                    Pixel pixelToDraw = new Pixel();
+                    pixelToDraw.Y = y;
+                    pixelToDraw.X = x;
+                    pixelToDraw.Color = _textures[_weapon.GetCurrentFrame()][_weapon.Width * texY+ texX].Color; //get current color from the texture
+                    if (pixelToDraw.Color != Color.FromArgb(0, 0, 0)) _drawingBuffer[_viewPort.Height * x + y] = pixelToDraw;
+                    texY++;
+                }
+                texY = 0;
+                texX++;
+            }
         }
 
         private void DrawMinimap(Point miniMapPosition, int blockSize)
@@ -253,10 +292,6 @@ namespace RayCast.Core
             }
             //SPRITE CASTING
             DrawSprites(spriteOrder, spriteDistance);
-
-            Draw.DrawPixels(_drawingBuffer);
-            Array.Clear(_drawingBuffer, 0, _drawingBuffer.Length);
-            Array.Clear(_zBuffer, 0, _zBuffer.Length);
         }
 
         private void DrawVerticalLine(int x, int[] spriteOrder, double[] spriteDistance)
