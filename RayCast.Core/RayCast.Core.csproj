@@ -57,7 +57,7 @@
     <Compile Include="Primitives\Sprite.cs" />
     <Compile Include="Primitives\Textures.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\Animator.cs" />
+    <Compile Include="Components\Animator.cs" />
     <Compile Include="Utils\Draw.cs" />
     <Compile Include="Utils\Extensions.cs" />
   </ItemGroup>

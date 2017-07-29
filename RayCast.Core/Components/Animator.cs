@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RayCast.Core.Utils
+namespace RayCast.Core.Components
 {
     public class Animator
     {
