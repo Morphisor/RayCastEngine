@@ -139,21 +139,21 @@ namespace RayCast.Core
             _textures.Add("bluestone.png", 7);
 
             _textures.Add("barrel.png", 8);
-            _textures.Add("pillar.png", 9);
-            _textures.Add("greenlight.png", 10);
+            _textures.Add("column.png", 9);
+            _textures.Add("light.png", 10);
 
             _textures.Add("enemy1.png", 11);
             _textures.Add("enemy2.png", 12);
             _textures.Add("enemy3.png", 13);
             _textures.Add("enemy4.png", 14);
 
-            _textures.Add("weapon.png", 15);
+            _textures.Add("weapon1.png", 15, 200, 200);
 
             //animated sprited need to registered in the animator that is responsible to upgrate the sprite texture each frame
             _animator = new Animator(_textures);
             _animator.AddAnimatedSprite(new AnimatedSprite(_sprites[0], new int[] { 11, 11, 12, 12, 13, 13, 14, 14 }));
 
-            _weapon = new Weapon(64, 64, new int[] { 15 });
+            _weapon = new Weapon(200, 200, new int[] { 15 });
 
             //init lookup
             _distLookUp = new Dictionary<int, double>();
@@ -253,7 +253,7 @@ namespace RayCast.Core
                     pixelToDraw.Y = y;
                     pixelToDraw.X = x;
                     pixelToDraw.Color = _textures[_weapon.GetCurrentFrame()][_weapon.Width * texY+ texX].Color; //get current color from the texture
-                    if (pixelToDraw.Color != Color.FromArgb(0, 0, 0)) _drawingBuffer[_viewPort.Height * x + y] = pixelToDraw;
+                    if (pixelToDraw.Color != Color.FromArgb(152, 0, 136)) _drawingBuffer[_viewPort.Height * x + y] = pixelToDraw;
                     texY++;
                 }
                 texY = 0;
@@ -523,7 +523,7 @@ namespace RayCast.Core
                             pixelToDraw.Y = y;
                             pixelToDraw.X = stripe;
                             pixelToDraw.Color = _textures[_sprites[spriteOrder[i]].Texture][_textures.TexturesWidth * texY + texX].Color; //get current color from the texture
-                            if (pixelToDraw.Color != Color.FromArgb(0, 0, 0)) _drawingBuffer[_viewPort.Height * stripe + y] = pixelToDraw;
+                            if (pixelToDraw.Color != Color.FromArgb(152, 0, 136)) _drawingBuffer[_viewPort.Height * stripe + y] = pixelToDraw;
                         }
                     }
                 }
