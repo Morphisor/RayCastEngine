@@ -24,9 +24,9 @@ namespace RayCast.Core
         private static double TARGET_UPDATES_PER_SECOND = 20;
         private static double MOVEMENT_SPEED = 0.080;
         private static double ROT_SPEED = 0.15;
-        private static int NUM_SPRITES = 19;
 
         private int[,] _worldMap;
+        private int _spriteNumber;
 
         private readonly Size _windowSize;
         private readonly Size _viewPort;
@@ -73,6 +73,8 @@ namespace RayCast.Core
 
             _player = new Player(22, 12, -1, 0);
             _camera = new Camera(0, 0.66);
+
+            _spriteNumber = _sprites.Length;
 
             //setup input
             Keyboard.KeyDown += new EventHandler<KeyboardKeyEventArgs>(KeyboardKeyDown);
@@ -213,8 +215,8 @@ namespace RayCast.Core
 
         private void DrawMap()
         {
-            int[] spriteOrder = new int[NUM_SPRITES];
-            double[] spriteDistance = new double[NUM_SPRITES];
+            int[] spriteOrder = new int[_spriteNumber];
+            double[] spriteDistance = new double[_spriteNumber];
 
             for (int x = 0; x < _viewPort.Width; x++)
             {
@@ -398,15 +400,15 @@ namespace RayCast.Core
         private void DrawSprites(int[] spriteOrder, double[] spriteDistance)
         {
             //sort sprites from far to close
-            for (int i = 0; i < NUM_SPRITES; i++)
+            for (int i = 0; i < _spriteNumber; i++)
             {
                 spriteOrder[i] = i;
                 spriteDistance[i] = ((_player.PosX - _sprites[i].X) * (_player.PosX - _sprites[i].X) + (_player.PosY - _sprites[i].Y) * (_player.PosY - _sprites[i].Y));
             }
-            SpriteSort(spriteOrder, spriteDistance, NUM_SPRITES);
+            SpriteSort(spriteOrder, spriteDistance, _spriteNumber);
 
             //projection and draw
-            for (int i = 0; i < NUM_SPRITES; i++)
+            for (int i = 0; i < _spriteNumber; i++)
             {
                 //translate sprite position
                 double spriteX = _sprites[spriteOrder[i]].X - _player.PosX;
