@@ -21,7 +21,7 @@ namespace RayCast.Core
     public class Engine : GameWindow
     {
 
-        private static double TARGET_UPDATES_PER_SECOND = 30;
+        private static double TARGET_UPDATES_PER_SECOND = 20;
         private static double MOVEMENT_SPEED = 0.080;
         private static double ROT_SPEED = 0.15;
         private static int NUM_SPRITES = 19;
@@ -35,6 +35,8 @@ namespace RayCast.Core
         private double _timeFromLastUpdate;
         private double _fps;
         private long _renderingCalculation;
+
+        private ResourceManager _resourceManager;
 
         private Textures _textures;
         private Sprite[] _sprites;
@@ -61,57 +63,13 @@ namespace RayCast.Core
             _drawingBuffer = new Pixel[_viewPort.Width * _viewPort.Height + 1];
             _zBuffer = new double[_viewPort.Width];
 
-            //map setup
-            _worldMap = new int[,]
-            {
-                {8,8,8,8,8,8,8,8,8,8,8,4,4,6,4,4,6,4,6,4,4,4,6,4},
-                {8,0,0,0,0,0,0,0,0,0,8,4,0,0,0,0,0,0,0,0,0,0,0,4},
-                {8,0,3,3,0,0,0,0,0,8,8,4,0,0,0,0,0,0,0,0,0,0,0,6},
-                {8,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6},
-                {8,0,3,3,0,0,0,0,0,8,8,4,0,0,0,0,0,0,0,0,0,0,0,4},
-                {8,0,0,0,0,0,0,0,0,0,8,4,0,0,0,0,0,6,6,6,0,6,4,6},
-                {8,8,8,8,0,8,8,8,8,8,8,4,4,4,4,4,4,6,0,0,0,0,0,6},
-                {7,7,7,7,0,7,7,7,7,0,8,0,8,0,8,0,8,4,0,4,0,6,0,6},
-                {7,7,0,0,0,0,0,0,7,8,0,8,0,8,0,8,8,6,0,0,0,0,0,6},
-                {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,6,0,0,0,0,0,4},
-                {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,6,0,6,0,6,0,6},
-                {7,7,0,0,0,0,0,0,7,8,0,8,0,8,0,8,8,6,4,6,0,6,6,6},
-                {7,7,7,7,0,7,7,7,7,8,8,4,0,6,8,4,8,3,3,3,0,3,3,3},
-                {2,2,2,2,0,2,2,2,2,4,6,4,0,0,6,0,6,3,0,0,0,0,0,3},
-                {2,2,0,0,0,0,0,2,2,4,0,0,0,0,0,0,4,3,0,0,0,0,0,3},
-                {2,0,0,0,0,0,0,0,2,4,0,0,0,0,0,0,4,3,0,0,0,0,0,3},
-                {1,0,0,0,0,0,0,0,1,4,4,4,4,4,6,0,6,3,3,0,0,0,3,3},
-                {2,0,0,0,0,0,0,0,2,2,2,1,2,2,2,6,6,0,0,5,0,5,0,5},
-                {2,2,0,0,0,0,0,2,2,2,0,0,0,2,2,0,5,0,5,0,0,0,5,5},
-                {2,0,0,0,0,0,0,0,2,0,0,0,0,0,2,5,0,5,0,5,0,5,0,5},
-                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5},
-                {2,0,0,0,0,0,0,0,2,0,0,0,0,0,2,5,0,5,0,5,0,5,0,5},
-                {2,2,0,0,0,0,0,2,2,2,0,0,0,2,2,0,5,0,5,0,0,0,5,5},
-                {2,2,2,2,1,2,2,2,2,2,2,1,2,2,2,5,5,5,5,5,5,5,5,5}
-            };
-
-            _sprites = new Sprite[]
-            {
-                  new Sprite(20.5, 11.5, 10),
-                  new Sprite(18.5,4.5, 10),
-                  new Sprite(10.0,4.5, 10),
-                  new Sprite(10.0,12.5,10),
-                  new Sprite(3.5, 6.5, 10),
-                  new Sprite(3.5, 20.5,10),
-                  new Sprite(3.5, 14.5,10),
-                  new Sprite(14.5,20.5,10),
-                  new Sprite(18.5, 10.5, 9),
-                  new Sprite(18.5, 11.5, 9),
-                  new Sprite(18.5, 12.5, 9),
-                  new Sprite(21.5, 1.5, 8),
-                  new Sprite(15.5, 1.5, 8),
-                  new Sprite(16.0, 1.8, 8),
-                  new Sprite(16.2, 1.2, 8),
-                  new Sprite(3.5,  2.5, 8),
-                  new Sprite(9.5, 15.5, 8),
-                  new Sprite(10.0, 15.1,8),
-                  new Sprite(10.5, 15.8,8),
-            };
+            _resourceManager = ResourceManager.Instance;
+            _resourceManager.ReadResourceFile("testlevel");
+            _worldMap = _resourceManager.WorldMap;
+            _textures = _resourceManager.Textures;
+            _sprites = _resourceManager.Sprites;
+            _animator = _resourceManager.Animator;
+            _weapon = new Weapon(200, 200, new int[] { 15 });
 
             _player = new Player(22, 12, -1, 0);
             _camera = new Camera(0, 0.66);
@@ -125,35 +83,6 @@ namespace RayCast.Core
             GL.LoadIdentity();
             GL.Ortho(0, _windowSize.Width, _windowSize.Height, 0, 0, 1);
             GL.MatrixMode(MatrixMode.Modelview);
-
-            //setup textures
-            _textures = new Textures(64, 64);
-
-            _textures.Add("redbrick.png", 0);
-            _textures.Add("wood.png", 1);
-            _textures.Add("mossy.png", 2);
-            _textures.Add("purplestone.png", 3);
-            _textures.Add("eagle.png", 4);
-            _textures.Add("colorstone.png", 5);
-            _textures.Add("greystone.png", 6);
-            _textures.Add("bluestone.png", 7);
-
-            _textures.Add("barrel.png", 8);
-            _textures.Add("column.png", 9);
-            _textures.Add("light.png", 10);
-
-            _textures.Add("enemy1.png", 11);
-            _textures.Add("enemy2.png", 12);
-            _textures.Add("enemy3.png", 13);
-            _textures.Add("enemy4.png", 14);
-
-            _textures.Add("weapon1.png", 15, 200, 200);
-
-            //animated sprited need to registered in the animator that is responsible to upgrate the sprite texture each frame
-            _animator = new Animator(_textures);
-            _animator.AddAnimatedSprite(new AnimatedSprite(_sprites[0], new int[] { 11, 11, 12, 12, 13, 13, 14, 14 }));
-
-            _weapon = new Weapon(200, 200, new int[] { 15 });
 
             //init lookup
             _distLookUp = new Dictionary<int, double>();
@@ -491,7 +420,7 @@ namespace RayCast.Core
                 int spriteScreenX = (int)((_viewPort.Width / 2) * (1 + transformX / transformY));
 
                 //calculate height of the sprite on screen
-                int spriteHeight = Math.Abs((int)(_viewPort.Height / (transformY)));
+                int spriteHeight = (int)Math.Abs((long)(_viewPort.Height / (transformY)));
                 int drawStartY = -spriteHeight / 2 + _viewPort.Height / 2;
                 if (drawStartY < 0) drawStartY = 0;
                 int drawEndY = spriteHeight / 2 + _viewPort.Height / 2;
