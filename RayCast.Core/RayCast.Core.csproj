@@ -66,6 +66,7 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Resources\configurations\general.ini" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\data\testlevel.res">
