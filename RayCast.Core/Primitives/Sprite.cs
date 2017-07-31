@@ -11,12 +11,14 @@ namespace RayCast.Core.Primitives
         public double X { get; set; }
         public double Y { get; set; }
         public int Texture { get; set; }
+        public bool IsVisible { get; set; }
 
         public Sprite(double x, double y, int texture)
         {
             this.X = x;
             this.Y = y;
             this.Texture = texture;
+            this.IsVisible = false;
         }
     }
 }

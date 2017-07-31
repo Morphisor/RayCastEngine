@@ -34,11 +34,11 @@ namespace RayCast.Core.Models
 
         public void UpdateNextFrame()
         {
-            if (IsShooting && _currentFrame + 1 <= _frameCount)
+            if (IsShooting && _currentFrame + 1 < _frameCount)
             {
                 _currentFrame += 1;
             }
-            else if (IsShooting && _currentFrame + 1 > _frameCount)
+            else if (IsShooting && _currentFrame + 1 >= _frameCount)
             {
                 _currentFrame = 0;
                 IsShooting = false;

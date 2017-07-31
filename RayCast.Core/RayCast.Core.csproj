@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\PathFinding.cs" />
     <Compile Include="Enums\MovingState.cs" />
     <Compile Include="Enums\TurningState.cs" />
     <Compile Include="Engine.cs" />

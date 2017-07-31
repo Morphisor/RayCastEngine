@@ -41,6 +41,7 @@ namespace RayCast.Core
         private Textures _textures;
         private Sprite[] _sprites;
         private Animator _animator;
+        private PathFinding _pathFinding;
 
         private Pixel[] _drawingBuffer;
         private double[] _zBuffer;
@@ -68,8 +69,11 @@ namespace RayCast.Core
             _worldMap = _resourceManager.WorldMap;
             _textures = _resourceManager.Textures;
             _sprites = _resourceManager.Sprites;
-            _animator = _resourceManager.Animator;
+            _animator = _resourceManager.Animator;     
             _weapon = new Weapon(200, 200, new int[] { 15 });
+
+            _pathFinding = new PathFinding(_worldMap);
+            _pathFinding.AddEntity(_sprites.First());
 
             _player = new Player(22, 12, -1, 0);
             _camera = new Camera(0, 0.66);
@@ -100,6 +104,7 @@ namespace RayCast.Core
             {
                 UpdatePlayerPosition();
                 _animator.UpdateCurrentFrame();
+                _pathFinding.UpdateEntityPosition(_player.PosX, _player.PosY);
 
                 _timeFromLastUpdate = 0;
             }
@@ -129,6 +134,9 @@ namespace RayCast.Core
 
             if (e.Key == Key.A)
                 _player.TurningState = TurningState.Left;
+
+            if (e.Key == Key.Space)
+                _weapon.IsShooting = true;
         }
 
         protected void KeyboardKeyUp(object sender, KeyboardKeyEventArgs e)
@@ -150,8 +158,7 @@ namespace RayCast.Core
             DrawMap();
             DrawMinimap(_mimiMapPosition, 10);
             DrawWeapon();
-
-
+            
             Draw.DrawPixels(_drawingBuffer);
             Array.Clear(_drawingBuffer, 0, _drawingBuffer.Length);
             Array.Clear(_zBuffer, 0, _zBuffer.Length);
@@ -410,6 +417,8 @@ namespace RayCast.Core
             //projection and draw
             for (int i = 0; i < _spriteNumber; i++)
             {
+                _sprites[spriteOrder[i]].IsVisible = false;
+
                 //translate sprite position
                 double spriteX = _sprites[spriteOrder[i]].X - _player.PosX;
                 double spriteY = _sprites[spriteOrder[i]].Y - _player.PosY;
@@ -446,6 +455,7 @@ namespace RayCast.Core
                     //4) ZBuffer, with perpendicular distance
                     if (transformY > 0 && stripe > 0 && stripe < _viewPort.Width && transformY < _zBuffer[stripe])
                     {
+                        _sprites[spriteOrder[i]].IsVisible = true;
                         for (int y = drawStartY; y < drawEndY; y++) //for every pixel of the current stripe
                         {
                             long d = (y) * 256 - _viewPort.Height * 128 + spriteHeight * 128; //magic code that gets the right color -.-
