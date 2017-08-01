@@ -47,7 +47,6 @@
   <ItemGroup>
     <Compile Include="Components\PathFinding.cs" />
     <Compile Include="EntityManager.cs" />
-    <Compile Include="Enums\EntityStatus.cs" />
     <Compile Include="Enums\MovingState.cs" />
     <Compile Include="Enums\TurningState.cs" />
     <Compile Include="Engine.cs" />

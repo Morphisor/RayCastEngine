@@ -15,13 +15,13 @@ namespace RayCast.Core.Interfaces
         int Id { get; }
 
         TComponent CreateComponent<TComponent>()
-            where TComponent : IComponent;
+            where TComponent : IComponent, new();
 
         bool DestroyComponent<TComponent>()
             where TComponent : IComponent;
 
         TComponent GetComponent<TComponent>()
-            where TComponent : IComponent;
+            where TComponent : class, IComponent;
 
         IEnumerable<IComponent> GetComponents();
     }

@@ -15,31 +15,43 @@ namespace RayCast.Core.Models
 
         public int Id { get; }
 
-        public TComponent CreateComponent<TComponent>() where TComponent : IComponent
+        public Entity(EntityManager manager, int entityId)
         {
-            var component = _manager.CreateComponent<TComponent>(this.Id);
+            _manager = manager;
+            Id = entityId;
+        }
 
-            //add new component to cache
+        public TComponent CreateComponent<TComponent>() 
+            where TComponent : IComponent, new()
+        {
+            TComponent component = _manager.CreateComponent<TComponent>(this.Id);
+
+            //add to cache if is a cache item
 
             return component;
         }
 
-        public bool DestroyComponent<TComponent>() where TComponent : IComponent
+        public bool DestroyComponent<TComponent>() 
+            where TComponent : IComponent
         {
             bool result = _manager.RemoveComponent<TComponent>(this.Id);
+            
+            //remove from cache if is a cache item
+
             return result;
         }
 
-        public TComponent GetComponent<TComponent>() where TComponent : IComponent
+        public TComponent GetComponent<TComponent>() 
+            where TComponent : class, IComponent
         {
-            var component = _manager.GetComponent<TComponent>(this.Id);
+            TComponent component = _manager.GetComponent<TComponent>(this.Id);
             return component;
         }
 
         public IEnumerable<IComponent> GetComponents()
         {
-            var components = _manager.GetComponents(this.Id);
-            return components;
+            IEnumerable<IComponent> copmonents = _manager.GetComponents(this.Id);
+            return copmonents;
         }
     }
 }

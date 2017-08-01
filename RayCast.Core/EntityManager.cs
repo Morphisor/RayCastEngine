@@ -14,38 +14,86 @@ namespace RayCast.Core
 
         private readonly Dictionary<int, Entity> _entities;
         private readonly Dictionary<Type, Dictionary<int, IComponent>> _components;
+        private int _nextId;
+
+        public EntityManager()
+        {
+            _entities = new Dictionary<int, Entity>();
+            _components = new Dictionary<Type, Dictionary<int, IComponent>>();
+            _nextId = 0;
+        }
 
         public Entity CreateEntity()
         {
-            throw new NotImplementedException();
+            Entity entity = new Entity(this, _nextId);
+            _entities.Add(_nextId, entity);
+            _nextId++;
+            return entity;
         }
 
         public bool DestroyEntity(int id)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < _components.Keys.Count; i++)
+            {
+                Type key = _components.Keys.ElementAt(i);
+                _components[key].Remove(id);
+            }
+
+            if (_entities.Remove(id))
+            {
+                _nextId--;
+                return true;
+            }
+
+            return false;
         }
 
         public TComponent CreateComponent<TComponent>(int entityId)
-            where TComponent : IComponent
+            where TComponent : IComponent, new()
         {
-            throw new NotImplementedException();
+            TComponent component = new TComponent();
+            Type componentType = typeof(TComponent);
+
+            if (_components.ContainsKey(componentType))
+            {
+                _components[componentType].Add(entityId, component);
+            }
+            else
+            {
+                _components.Add(componentType, new Dictionary<int, IComponent>());
+                _components[componentType].Add(entityId, component);
+            }
+
+            return component;
         }
 
         public bool RemoveComponent<TComponent>(int entityId)
             where TComponent : IComponent
         {
-            throw new NotImplementedException();
+            return _components[typeof(TComponent)].Remove(entityId);
         }
 
         public TComponent GetComponent<TComponent>(int entityId)
-            where TComponent : IComponent
+            where TComponent : class, IComponent
         {
-            throw new NotImplementedException();
+            Type componentType = typeof(TComponent);
+
+            if (_components[componentType].ContainsKey(entityId))
+                return _components[componentType][entityId] as TComponent;
+            else
+                return null;
         }
 
         public IEnumerable<IComponent> GetComponents(int entityId)
         {
-            throw new NotImplementedException();
+            List<IComponent> components = new List<IComponent>();
+            for (int i = 0; i < _components.Keys.Count; i++)
+            {
+                Type key = _components.Keys.ElementAt(i);
+                if (_components[key].ContainsKey(entityId))
+                    components.Add(_components[key][entityId]);
+            }
+            return components;
         }
     }
 }
