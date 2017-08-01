@@ -21,28 +21,25 @@ namespace RayCast.Core.Models
 
             //add new component to cache
 
-            throw new NotImplementedException();
+            return component;
         }
 
         public bool DestroyComponent<TComponent>() where TComponent : IComponent
         {
             bool result = _manager.RemoveComponent<TComponent>(this.Id);
-
-            //remove from cache
-
-            throw new NotImplementedException();
+            return result;
         }
 
         public TComponent GetComponent<TComponent>() where TComponent : IComponent
         {
             var component = _manager.GetComponent<TComponent>(this.Id);
-            throw new NotImplementedException();
+            return component;
         }
 
         public IEnumerable<IComponent> GetComponents()
         {
             var components = _manager.GetComponents(this.Id);
-            throw new NotImplementedException();
+            return components;
         }
     }
 }
