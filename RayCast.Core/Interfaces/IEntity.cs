@@ -1,5 +1,6 @@
 ﻿using RayCast.Core.Components;
 using RayCast.Core.Enums;
+using RayCast.Core.Models;
 using RayCast.Core.Primitives;
 using System;
 using System.Collections.Generic;
@@ -11,17 +12,17 @@ namespace RayCast.Core.Interfaces
 {
     public interface IEntity
     {
-        AnimatedSprite AnimatedSprite { get; set; }
-        PathFinding PathFinding { get; set; }
-        EntityStatus Status { get; set; }
-        int[] AttackFrames { get; set; }
-        int[] IdleFrames { get; set; }
-        int[] DeathFrames { get; set; }
-        int Ealth { get; set; }
-        int Damage { get; set; }
+        int Id { get; }
 
-        void UpdateEntity();
-        void Attack();
-        void TakeDamage();
+        TComponent CreateComponent<TComponent>()
+            where TComponent : IComponent;
+
+        bool DestroyComponent<TComponent>()
+            where TComponent : IComponent;
+
+        TComponent GetComponent<TComponent>()
+            where TComponent : IComponent;
+
+        IEnumerable<IComponent> GetComponents();
     }
 }
