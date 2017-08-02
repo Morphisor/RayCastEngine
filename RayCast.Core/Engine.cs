@@ -22,7 +22,7 @@ namespace RayCast.Core
     {
 
         private static double TARGET_UPDATES_PER_SECOND = 20;
-        private static double MOVEMENT_SPEED = 0.080;
+        private static double MOVEMENT_SPEED = 0.1;
         private static double ROT_SPEED = 0.15;
 
         private int[,] _worldMap;

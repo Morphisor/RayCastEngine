@@ -12,6 +12,12 @@ namespace RayCast.Core
     {
         Entity this[int index] => _entities[index];
 
+        public event OnCreateComponentHandler OnCreateComponent;
+        public event OnDestroyComponentHandler OnDestroyComponent;
+
+        public delegate void OnCreateComponentHandler(OnCreateComponentArgs e);
+        public delegate void OnDestroyComponentHandler(OnDestroyComponentArgs e);
+
         private readonly Dictionary<int, Entity> _entities;
         private readonly Dictionary<Type, Dictionary<int, IComponent>> _components;
         private int _nextId;
@@ -28,6 +34,7 @@ namespace RayCast.Core
             Entity entity = new Entity(this, _nextId);
             _entities.Add(_nextId, entity);
             _nextId++;
+
             return entity;
         }
 
@@ -64,13 +71,23 @@ namespace RayCast.Core
                 _components[componentType].Add(entityId, component);
             }
 
+            OnCreateComponent?.Invoke(new OnCreateComponentArgs(component, entityId));
+
             return component;
         }
 
         public bool RemoveComponent<TComponent>(int entityId)
             where TComponent : IComponent
         {
-            return _components[typeof(TComponent)].Remove(entityId);
+            Type componentType = typeof(TComponent);
+
+            if (_components[componentType].Remove(entityId))
+            {
+                OnDestroyComponent?.Invoke(new OnDestroyComponentArgs(componentType, entityId));
+                return true;
+            }
+
+            return false;
         }
 
         public TComponent GetComponent<TComponent>(int entityId)
