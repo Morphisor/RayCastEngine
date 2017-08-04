@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RayCast.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,8 @@ namespace RayCast.Core.Systems
         public abstract void Initialize();
         public abstract void Update();
         public abstract void Dispose();
+
+        public abstract void OnComponentCreated(OnCreateComponentArgs e);
+        public abstract void OnComponentDestroyed(OnDestroyComponentArgs e);
     }
 }

@@ -132,5 +132,10 @@ namespace RayCast.Core
         {
             return _entities.Where(x => x.Value.EntityType == entityType).Select(x => x.Value);
         }
+
+        public EntityType GetEntityType(int entityId)
+        {
+            return _entities[entityId].EntityType;
+        }
     }
 }

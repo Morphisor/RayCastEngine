@@ -23,10 +23,15 @@ namespace RayCast.Core.Systems
             _manager = manager;
             _worldMap = worldMap;
             _relatedSprites = new Dictionary<int, SpriteComponent>();
+            _manager.OnCreateComponent += OnComponentCreated;
+            _manager.OnDestroyComponent += OnComponentDestroyed;
         }
 
         public override void Dispose()
         {
+            _manager.OnCreateComponent -= OnComponentCreated;
+            _manager.OnDestroyComponent -= OnComponentDestroyed;
+
             foreach (int key in _relatedSprites.Keys)
             {
                 _manager.DestroyEntity(key);
@@ -96,6 +101,23 @@ namespace RayCast.Core.Systems
                 else if (_worldMap[nextMapX, nextMapY] != 0 && nextMapY != mapY)
                     sprite.X += dirX * MOVEMENT_SPEED;
             }
+        }
+
+        public override void OnComponentCreated(OnCreateComponentArgs e)
+        {
+            if (e.Component is SpriteComponent && _manager.GetEntityType(e.EntityId) == EntityType.Enemy)
+            {
+                if (_relatedSprites.ContainsKey(e.EntityId))
+                    _relatedSprites[e.EntityId] = e.Component as SpriteComponent;
+                else
+                    _relatedSprites.Add(e.EntityId, e.Component as SpriteComponent);
+            }
+        }
+
+        public override void OnComponentDestroyed(OnDestroyComponentArgs e)
+        {
+            if (e.ComponentType == typeof(SpriteComponent))
+                _relatedSprites.Remove(e.EntityId);         
         }
     }
 }
