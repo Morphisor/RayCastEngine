@@ -13,16 +13,16 @@ namespace RayCast.Core.Components
         private const double MOVEMENT_SPEED = 0.06;
         private const double ROTATION_SPEED = 0.15;
 
-        private List<Sprite> _entities;
+        private List<SpriteComponent> _entities;
         private int[,] _worldMap;
 
         public PathFinding(int[,] worldMap)
         {
             _worldMap = worldMap;
-            _entities = new List<Sprite>();
+            _entities = new List<SpriteComponent>();
         }
 
-        public void AddEntity(Sprite entity)
+        public void AddEntity(SpriteComponent entity)
         {
             _entities.Add(entity);
         }

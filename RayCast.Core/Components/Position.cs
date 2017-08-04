@@ -1,13 +1,13 @@
-﻿using RayCast.Core.Enums;
+﻿using RayCast.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RayCast.Core.Models
+namespace RayCast.Core.Components
 {
-    public class Player
+    public class Position : IComponent
     {
         //start positions
         public double PosX { get; set; }
@@ -17,19 +17,14 @@ namespace RayCast.Core.Models
         public double DirX { get; set; }
         public double DirY { get; set; }
 
-        public TurningState TurningState { get; set; }
-        public MovingState MovingState { get; set; }
-        
-        public Player() { }
-        public Player(double posX, double posY, double dirX, double dirY)
+        public Position() { }
+
+        public void SetPosition (double posX, double posY, double dirX, double dirY)
         {
             this.PosX = posX;
             this.PosY = posY;
             this.DirX = dirX;
             this.DirY = dirY;
-
-            this.MovingState = MovingState.Idle;
-            this.TurningState = TurningState.Idle;
         }
     }
 }

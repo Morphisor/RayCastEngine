@@ -1,21 +1,22 @@
-﻿using System;
+﻿using RayCast.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RayCast.Core.Primitives
+namespace RayCast.Core.Components
 {
-    public class Sprite
+    public class SpriteComponent : IComponent
     {
         public double X { get; set; }
         public double Y { get; set; }
         public int Texture { get; set; }
         public bool IsVisible { get; set; }
 
-        public Sprite() { }
+        public SpriteComponent() { }
 
-        public Sprite(double x, double y, int texture)
+        public void InitSprite(double x, double y, int texture)
         {
             this.X = x;
             this.Y = y;

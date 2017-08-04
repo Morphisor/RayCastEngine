@@ -13,6 +13,7 @@ namespace RayCast.Core.Interfaces
     public interface IEntity
     {
         int Id { get; }
+        EntityType EntityType { get; set; }
 
         TComponent CreateComponent<TComponent>()
             where TComponent : IComponent, new();

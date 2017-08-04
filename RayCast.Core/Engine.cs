@@ -15,6 +15,7 @@ using System.Runtime;
 using RayCast.Core.Models;
 using System.Diagnostics;
 using RayCast.Core.Components;
+using RayCast.Core.Systems;
 
 namespace RayCast.Core
 {
@@ -37,18 +38,21 @@ namespace RayCast.Core
         private long _renderingCalculation;
 
         private ResourceManager _resourceManager;
+        private EntityManager _manager;
+
+        private AnimationSystem _animationSystem;
+        private PathFindingSystem _pathFindingSystem;
 
         private Textures _textures;
-        private Sprite[] _sprites;
-        private Animator _animator;
-        private PathFinding _pathFinding;
 
         private Pixel[] _drawingBuffer;
         private double[] _zBuffer;
 
-        private Player _player;
-        private Camera _camera;
+        private Entity _player;
+        private Entity _camera;
         private Weapon _weapon;
+
+        private List<Entity> _sprites;
 
         private Dictionary<int, double> _distLookUp;
 
@@ -64,21 +68,37 @@ namespace RayCast.Core
             _drawingBuffer = new Pixel[_viewPort.Width * _viewPort.Height + 1];
             _zBuffer = new double[_viewPort.Width];
 
+            _manager = new EntityManager();
             _resourceManager = ResourceManager.Instance;
             _resourceManager.ReadResourceFile("testlevel");
             _worldMap = _resourceManager.WorldMap;
-            _textures = _resourceManager.Textures;
-            _sprites = _resourceManager.Sprites;
-            _animator = _resourceManager.Animator;     
+            _textures = _resourceManager.Textures; 
             _weapon = new Weapon(200, 200, new int[] { 15 });
 
-            _pathFinding = new PathFinding(_worldMap);
-            _pathFinding.AddEntity(_sprites.First());
+            _player = _manager.CreateEntity();
+            var playerPosition =_manager.CreateComponent<Position>(_player.Id);
+            var playerMovement = _manager.CreateComponent<Movement>(_player.Id);
+            playerPosition.SetPosition(22, 12, -1, 0);
 
-            _player = new Player(22, 12, -1, 0);
-            _camera = new Camera(0, 0.66);
+            _camera = _manager.CreateEntity();
+            var cameraComponent = _manager.CreateComponent<Camera>(_camera.Id);
+            cameraComponent.SetCameraPlane(0, 0.66);
 
-            _spriteNumber = _sprites.Length;
+            foreach (var sprite in _resourceManager.Sprites)
+            {
+                var spriteEntity = _manager.CreateEntity();
+                var spriteComponent = _manager.CreateComponent<SpriteComponent>(spriteEntity.Id);
+                spriteComponent.InitSprite(sprite.X, sprite.Y, sprite.Texture);
+                _sprites.Add(spriteEntity);
+
+            }
+
+            _animationSystem = new AnimationSystem(_manager);
+            _animationSystem.Initialize();
+
+            _pathFindingSystem = new PathFindingSystem(_manager, _worldMap);
+
+            _spriteNumber = _sprites.Count;
 
             //setup input
             Keyboard.KeyDown += new EventHandler<KeyboardKeyEventArgs>(KeyboardKeyDown);
@@ -103,8 +123,8 @@ namespace RayCast.Core
             if (_timeFromLastUpdate >= 1 / TARGET_UPDATES_PER_SECOND)
             {
                 UpdatePlayerPosition();
-                _animator.UpdateCurrentFrame();
-                _pathFinding.UpdateEntityPosition(_player.PosX, _player.PosY);
+                _animationSystem.Update();
+                _pathFindingSystem.Update();
 
                 _timeFromLastUpdate = 0;
             }
@@ -123,29 +143,32 @@ namespace RayCast.Core
 
         protected void KeyboardKeyDown(object sender, KeyboardKeyEventArgs e)
         {
+
+            var playerMovement = _player.GetComponent<Movement>();
+
             if (e.Key == Key.W)
-                _player.MovingState = MovingState.Forward;
+                playerMovement.MovingState = MovingState.Forward;
 
             if (e.Key == Key.S)
-                _player.MovingState = MovingState.Backward;
+                playerMovement.MovingState = MovingState.Backward;
 
             if (e.Key == Key.D)
-                _player.TurningState = TurningState.Right;
+                playerMovement.TurningState = TurningState.Right;
 
             if (e.Key == Key.A)
-                _player.TurningState = TurningState.Left;
+                playerMovement.TurningState = TurningState.Left;
 
-            if (e.Key == Key.Space)
-                _weapon.IsShooting = true;
         }
 
         protected void KeyboardKeyUp(object sender, KeyboardKeyEventArgs e)
         {
+            var playerMovement = _player.GetComponent<Movement>();
+
             if (e.Key == Key.A || e.Key == Key.D)
-                _player.TurningState = TurningState.Idle;
+                playerMovement.TurningState = TurningState.Idle;
 
             if (e.Key == Key.W || e.Key == Key.S)
-                _player.MovingState = MovingState.Idle;
+                playerMovement.MovingState = MovingState.Idle;
         }
 
         private void Render()
@@ -202,6 +225,7 @@ namespace RayCast.Core
         private void DrawMinimap(Point miniMapPosition, int blockSize)
         {
             //draw map
+            var playerPosition = _player.GetComponent<Position>();
             Color blockColor = Color.White;
             for (int y = 0; y < _worldMap.GetLength(0); y++)
             {
@@ -216,7 +240,7 @@ namespace RayCast.Core
                 }
             }
             //draw player
-            Point mapPlayer = new Point((int)Math.Floor((_player.PosY * 64) / 64 * blockSize) + miniMapPosition.X, (int)Math.Floor((_player.PosX * 64) / 64 * blockSize) + miniMapPosition.Y);
+            Point mapPlayer = new Point((int)Math.Floor((playerPosition.PosY * 64) / 64 * blockSize) + miniMapPosition.X, (int)Math.Floor((playerPosition.PosX * 64) / 64 * blockSize) + miniMapPosition.Y);
             Draw.DrawCircle(mapPlayer, blockSize, Color.Red);
         }
 
@@ -235,8 +259,11 @@ namespace RayCast.Core
 
         private void DrawVerticalLine(int x, int[] spriteOrder, double[] spriteDistance)
         {
+            var playerPosition = _player.GetComponent<Position>();
+            var camera = _camera.GetComponent<Camera>();
+
             double cameraX = 2 * x / (double)_viewPort.Width - 1; //x-coordinate in camera space
-            Ray ray = new Ray(_player.PosX, _player.PosY, (_player.DirX + _camera.PlaneX * cameraX), (_player.DirY + _camera.PlaneY * cameraX));
+            Ray ray = new Ray(playerPosition.PosX, playerPosition.PosY, (playerPosition.DirX + camera.PlaneX * cameraX), (playerPosition.DirY + camera.PlaneY * cameraX));
 
             double perpWallDist;
             Point step = FindRayCastHit(ray);
@@ -291,6 +318,8 @@ namespace RayCast.Core
             double floorXWall;
             double floorYWall; //x, y position of the floor texel at the bottom of the wall
 
+            var playerPosition = _player.GetComponent<Position>();
+
             //4 different wall directions possible
             if (ray.Side == 0 && ray.RayDirX > 0)
             {
@@ -329,8 +358,8 @@ namespace RayCast.Core
 
                 double weight = (currentDist - distPlayer) / (distWall - distPlayer);
 
-                double currentFloorX = weight * floorXWall + (1.0 - weight) * _player.PosX;
-                double currentFloorY = weight * floorYWall + (1.0 - weight) * _player.PosY;
+                double currentFloorX = weight * floorXWall + (1.0 - weight) * playerPosition.PosX;
+                double currentFloorY = weight * floorYWall + (1.0 - weight) * playerPosition.PosY;
 
                 int floorTexX, floorTexY;
                 floorTexX = (int)((currentFloorX * _textures.TexturesWidth) % _textures.TexturesWidth);
@@ -406,27 +435,34 @@ namespace RayCast.Core
 
         private void DrawSprites(int[] spriteOrder, double[] spriteDistance)
         {
+            var playerPosition = _player.GetComponent<Position>();
+            var camera = _camera.GetComponent<Camera>();
+
             //sort sprites from far to close
             for (int i = 0; i < _spriteNumber; i++)
             {
                 spriteOrder[i] = i;
-                spriteDistance[i] = ((_player.PosX - _sprites[i].X) * (_player.PosX - _sprites[i].X) + (_player.PosY - _sprites[i].Y) * (_player.PosY - _sprites[i].Y));
+                var spriteComponents = _sprites[i].GetComponent<SpriteComponent>();
+                spriteDistance[i] = ((playerPosition.PosX - spriteComponents.X) * (playerPosition.PosX - spriteComponents.X) + (playerPosition.PosY - spriteComponents.Y) * (playerPosition.PosY - spriteComponents.Y));
             }
             SpriteSort(spriteOrder, spriteDistance, _spriteNumber);
 
             //projection and draw
             for (int i = 0; i < _spriteNumber; i++)
             {
-                _sprites[spriteOrder[i]].IsVisible = false;
+
+                var spriteComponent = _sprites[spriteOrder[i]].GetComponent<SpriteComponent>();
+
+                spriteComponent.IsVisible = false;
 
                 //translate sprite position
-                double spriteX = _sprites[spriteOrder[i]].X - _player.PosX;
-                double spriteY = _sprites[spriteOrder[i]].Y - _player.PosY;
+                double spriteX = spriteComponent.X - playerPosition.PosX;
+                double spriteY = spriteComponent.Y - playerPosition.PosY;
 
-                double invDet = 1.0 / (_camera.PlaneX * _player.DirY - _player.DirX * _camera.PlaneY);
+                double invDet = 1.0 / (camera.PlaneX * playerPosition.DirY - playerPosition.DirX * camera.PlaneY);
 
-                double transformX = invDet * (_player.DirY * spriteX - _player.DirX * spriteY);
-                double transformY = invDet * (-_camera.PlaneY * spriteX + _camera.PlaneX * spriteY);
+                double transformX = invDet * (playerPosition.DirY * spriteX - playerPosition.DirX * spriteY);
+                double transformY = invDet * (-camera.PlaneY * spriteX + camera.PlaneX * spriteY);
 
                 int spriteScreenX = (int)((_viewPort.Width / 2) * (1 + transformX / transformY));
 
@@ -455,7 +491,7 @@ namespace RayCast.Core
                     //4) ZBuffer, with perpendicular distance
                     if (transformY > 0 && stripe > 0 && stripe < _viewPort.Width && transformY < _zBuffer[stripe])
                     {
-                        _sprites[spriteOrder[i]].IsVisible = true;
+                        spriteComponent.IsVisible = true;
                         for (int y = drawStartY; y < drawEndY; y++) //for every pixel of the current stripe
                         {
                             long d = (y) * 256 - _viewPort.Height * 128 + spriteHeight * 128; //magic code that gets the right color -.-
@@ -463,7 +499,7 @@ namespace RayCast.Core
                             Pixel pixelToDraw = new Pixel();
                             pixelToDraw.Y = y;
                             pixelToDraw.X = stripe;
-                            pixelToDraw.Color = _textures[_sprites[spriteOrder[i]].Texture][_textures.TexturesWidth * texY + texX].Color; //get current color from the texture
+                            pixelToDraw.Color = _textures[spriteComponent.Texture][_textures.TexturesWidth * texY + texX].Color; //get current color from the texture
                             if (pixelToDraw.Color != Color.FromArgb(152, 0, 136)) _drawingBuffer[_viewPort.Height * stripe + y] = pixelToDraw;
                         }
                     }
@@ -473,37 +509,41 @@ namespace RayCast.Core
 
         private void UpdatePlayerPosition()
         {
+            var playerPosition = _player.GetComponent<Position>();
+            var playerMovement = _player.GetComponent<Movement>();
+            var camera = _player.GetComponent<Camera>();
+
             //update player pos
-            if (_player.MovingState == MovingState.Forward)
+            if (playerMovement.MovingState == MovingState.Forward)
             {
-                if (_worldMap[(int)(_player.PosX + _player.DirX * MOVEMENT_SPEED), (int)_player.PosY] == 0) _player.PosX += _player.DirX * MOVEMENT_SPEED;
-                if (_worldMap[(int)_player.PosX, (int)(_player.PosY + _player.DirY * MOVEMENT_SPEED)] == 0) _player.PosY += _player.DirY * MOVEMENT_SPEED;
+                if (_worldMap[(int)(playerPosition.PosX + playerPosition.DirX * MOVEMENT_SPEED), (int)playerPosition.PosY] == 0) playerPosition.PosX += playerPosition.DirX * MOVEMENT_SPEED;
+                if (_worldMap[(int)playerPosition.PosX, (int)(playerPosition.PosY + playerPosition.DirY * MOVEMENT_SPEED)] == 0) playerPosition.PosY += playerPosition.DirY * MOVEMENT_SPEED;
             }
 
-            if (_player.MovingState == MovingState.Backward)
+            if (playerMovement.MovingState == MovingState.Backward)
             {
-                if (_worldMap[(int)(_player.PosX - _player.DirX * MOVEMENT_SPEED), (int)_player.PosY] == 0) _player.PosX -= _player.DirX * MOVEMENT_SPEED;
-                if (_worldMap[(int)_player.PosX, (int)(_player.PosY - _player.DirY * MOVEMENT_SPEED)] == 0) _player.PosY -= _player.DirY * MOVEMENT_SPEED;
+                if (_worldMap[(int)(playerPosition.PosX - playerPosition.DirX * MOVEMENT_SPEED), (int)playerPosition.PosY] == 0) playerPosition.PosX -= playerPosition.DirX * MOVEMENT_SPEED;
+                if (_worldMap[(int)playerPosition.PosX, (int)(playerPosition.PosY - playerPosition.DirY * MOVEMENT_SPEED)] == 0) playerPosition.PosY -= playerPosition.DirY * MOVEMENT_SPEED;
             }
 
-            if (_player.TurningState == TurningState.Right)
+            if (playerMovement.TurningState == TurningState.Right)
             {
-                double oldDirX = _player.DirX;
-                _player.DirX = _player.DirX * Math.Cos(-ROT_SPEED) - _player.DirY * Math.Sin(-ROT_SPEED);
-                _player.DirY = oldDirX * Math.Sin(-ROT_SPEED) + _player.DirY * Math.Cos(-ROT_SPEED);
-                double oldPlaneX = _camera.PlaneX;
-                _camera.PlaneX = _camera.PlaneX * Math.Cos(-ROT_SPEED) - _camera.PlaneY * Math.Sin(-ROT_SPEED);
-                _camera.PlaneY = oldPlaneX * Math.Sin(-ROT_SPEED) + _camera.PlaneY * Math.Cos(-ROT_SPEED);
+                double oldDirX = playerPosition.DirX;
+                playerPosition.DirX = playerPosition.DirX * Math.Cos(-ROT_SPEED) - playerPosition.DirY * Math.Sin(-ROT_SPEED);
+                playerPosition.DirY = oldDirX * Math.Sin(-ROT_SPEED) + playerPosition.DirY * Math.Cos(-ROT_SPEED);
+                double oldPlaneX = camera.PlaneX;
+                camera.PlaneX = camera.PlaneX * Math.Cos(-ROT_SPEED) - camera.PlaneY * Math.Sin(-ROT_SPEED);
+                camera.PlaneY = oldPlaneX * Math.Sin(-ROT_SPEED) + camera.PlaneY * Math.Cos(-ROT_SPEED);
             }
 
-            if (_player.TurningState == TurningState.Left)
+            if (playerMovement.TurningState == TurningState.Left)
             {
-                double oldDirX = _player.DirX;
-                _player.DirX = _player.DirX * Math.Cos(ROT_SPEED) - _player.DirY * Math.Sin(ROT_SPEED);
-                _player.DirY = oldDirX * Math.Sin(ROT_SPEED) + _player.DirY * Math.Cos(ROT_SPEED);
-                double oldPlaneX = _camera.PlaneX;
-                _camera.PlaneX = _camera.PlaneX * Math.Cos(ROT_SPEED) - _camera.PlaneY * Math.Sin(ROT_SPEED);
-                _camera.PlaneY = oldPlaneX * Math.Sin(ROT_SPEED) + _camera.PlaneY * Math.Cos(ROT_SPEED);
+                double oldDirX = playerPosition.DirX;
+                playerPosition.DirX = playerPosition.DirX * Math.Cos(ROT_SPEED) - playerPosition.DirY * Math.Sin(ROT_SPEED);
+                playerPosition.DirY = oldDirX * Math.Sin(ROT_SPEED) + playerPosition.DirY * Math.Cos(ROT_SPEED);
+                double oldPlaneX = camera.PlaneX;
+                camera.PlaneX = camera.PlaneX * Math.Cos(ROT_SPEED) - camera.PlaneY * Math.Sin(ROT_SPEED);
+                camera.PlaneY = oldPlaneX * Math.Sin(ROT_SPEED) + camera.PlaneY * Math.Cos(ROT_SPEED);
             }
         }
 

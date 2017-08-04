@@ -1,4 +1,5 @@
-﻿using RayCast.Core.Interfaces;
+﻿using RayCast.Core.Enums;
+using RayCast.Core.Interfaces;
 using RayCast.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -111,6 +112,25 @@ namespace RayCast.Core
                     components.Add(_components[key][entityId]);
             }
             return components;
+        }
+
+        public Dictionary<int, IComponent> GetAllComponents<TComponent>()
+            where TComponent : class, IComponent
+        {
+            Dictionary<int, IComponent> components = new Dictionary<int, IComponent>();
+            foreach (int entityId in _entities.Keys)
+            {
+                IComponent component = _entities[entityId].GetComponent<TComponent>();
+                if (component != null)
+                    components.Add(entityId, component);
+            }
+
+            return components;
+        }
+
+        public IEnumerable<Entity> EntititiesByType(EntityType entityType)
+        {
+            return _entities.Where(x => x.Value.EntityType == EntityType.Enemy).Select(x => x.Value);
         }
     }
 }

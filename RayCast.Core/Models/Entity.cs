@@ -1,4 +1,5 @@
-﻿using RayCast.Core.Interfaces;
+﻿using RayCast.Core.Enums;
+using RayCast.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,13 @@ namespace RayCast.Core.Models
         private readonly EntityManager _manager;
 
         public int Id { get; }
+        public EntityType EntityType { get; set; }
 
-        public Entity(EntityManager manager, int entityId)
+        public Entity(EntityManager manager, int entityId, EntityType type = EntityType.GameObject)
         {
             _manager = manager;
             Id = entityId;
+            EntityType = type;
         }
 
         public TComponent CreateComponent<TComponent>() 
