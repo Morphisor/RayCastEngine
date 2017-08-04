@@ -24,7 +24,7 @@ namespace RayCast.Core.Utils
         public int[,] WorldMap { get; set; }
         public Textures Textures { get; set; }
         public Sprite[] Sprites { get; set; }
-        public Animator Animator { get; set; }
+        public Dictionary<int, int[]> AnimatedSprites{ get; set; }
 
         private static ResourceManager _instance;
         public static ResourceManager Instance
@@ -169,7 +169,7 @@ namespace RayCast.Core.Utils
 
         private void ParseAnimatedSprites(List<string> listToParse)
         {
-            Animator = new Animator(Textures);
+            AnimatedSprites = new Dictionary<int, int[]>();
             foreach (string line in listToParse)
             {
                 string[] splitted = line.Split(SEPARATOR_CHAR);
@@ -184,7 +184,7 @@ namespace RayCast.Core.Utils
                 for (int i = 0; i < splitted.Length; i++)
                     frames[i] = int.Parse(splitted[i].Trim());
 
-                Animator.AddAnimatedSprite(new AnimatedSprite(Sprites[spriteIndex], frames));
+                AnimatedSprites.Add(spriteIndex, frames);
             }
         }
 

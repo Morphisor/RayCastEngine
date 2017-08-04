@@ -75,7 +75,7 @@ namespace RayCast.Core
             _textures = _resourceManager.Textures; 
             _weapon = new Weapon(200, 200, new int[] { 15 });
 
-            _player = _manager.CreateEntity();
+            _player = _manager.CreateEntity(EntityType.Player);
             var playerPosition =_manager.CreateComponent<Position>(_player.Id);
             var playerMovement = _manager.CreateComponent<Movement>(_player.Id);
             playerPosition.SetPosition(22, 12, -1, 0);
@@ -84,19 +84,29 @@ namespace RayCast.Core
             var cameraComponent = _manager.CreateComponent<Camera>(_camera.Id);
             cameraComponent.SetCameraPlane(0, 0.66);
 
+            _sprites = new List<Entity>();
             foreach (var sprite in _resourceManager.Sprites)
             {
                 var spriteEntity = _manager.CreateEntity();
                 var spriteComponent = _manager.CreateComponent<SpriteComponent>(spriteEntity.Id);
                 spriteComponent.InitSprite(sprite.X, sprite.Y, sprite.Texture);
-                _sprites.Add(spriteEntity);
 
+                if (_resourceManager.AnimatedSprites.ContainsKey(Array.IndexOf(_resourceManager.Sprites, sprite)))
+                {
+                    var animation = _manager.CreateComponent<Animation>(spriteEntity.Id);
+                    animation.InitAnimation(_resourceManager.AnimatedSprites[Array.IndexOf(_resourceManager.Sprites, sprite)]);
+                }
+
+                _sprites.Add(spriteEntity);
             }
+
+            _sprites[0].EntityType = EntityType.Enemy;
 
             _animationSystem = new AnimationSystem(_manager);
             _animationSystem.Initialize();
 
             _pathFindingSystem = new PathFindingSystem(_manager, _worldMap);
+            _pathFindingSystem.Initialize();
 
             _spriteNumber = _sprites.Count;
 
@@ -511,7 +521,7 @@ namespace RayCast.Core
         {
             var playerPosition = _player.GetComponent<Position>();
             var playerMovement = _player.GetComponent<Movement>();
-            var camera = _player.GetComponent<Camera>();
+            var camera = _camera.GetComponent<Camera>();
 
             //update player pos
             if (playerMovement.MovingState == MovingState.Forward)

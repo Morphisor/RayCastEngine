@@ -17,7 +17,7 @@ namespace RayCast.Core.Models
         public int Id { get; }
         public EntityType EntityType { get; set; }
 
-        public Entity(EntityManager manager, int entityId, EntityType type = EntityType.GameObject)
+        public Entity(EntityManager manager, int entityId, EntityType type)
         {
             _manager = manager;
             Id = entityId;

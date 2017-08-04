@@ -30,9 +30,9 @@ namespace RayCast.Core
             _nextId = 0;
         }
 
-        public Entity CreateEntity()
+        public Entity CreateEntity(EntityType type = EntityType.GameObject)
         {
-            Entity entity = new Entity(this, _nextId);
+            Entity entity = new Entity(this, _nextId, type);
             _entities.Add(_nextId, entity);
             _nextId++;
 
@@ -130,7 +130,7 @@ namespace RayCast.Core
 
         public IEnumerable<Entity> EntititiesByType(EntityType entityType)
         {
-            return _entities.Where(x => x.Value.EntityType == EntityType.Enemy).Select(x => x.Value);
+            return _entities.Where(x => x.Value.EntityType == entityType).Select(x => x.Value);
         }
     }
 }

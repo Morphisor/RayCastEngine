@@ -22,6 +22,7 @@ namespace RayCast.Core.Systems
         {
             _manager = manager;
             _worldMap = worldMap;
+            _relatedSprites = new Dictionary<int, SpriteComponent>();
         }
 
         public override void Dispose()
