@@ -438,7 +438,7 @@ namespace RayCast.Core
                 if (drawEndY >= _viewPort.Height) drawEndY = _viewPort.Height - 1;
 
                 //calculate width of the sprite
-                int spriteWidth = Math.Abs((int)(_viewPort.Height / (transformY)));
+                int spriteWidth = (int)Math.Abs((long)(_viewPort.Height / (transformY)));
                 int drawStartX = -spriteWidth / 2 + spriteScreenX;
                 if (drawStartX < 0) drawStartX = 0;
                 int drawEndX = spriteWidth / 2 + spriteScreenX;
