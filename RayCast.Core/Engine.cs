@@ -143,11 +143,11 @@ namespace RayCast.Core
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _fps = 1 / e.Time;
-            Console.Clear();
-            Console.WriteLine("FPS: " + Math.Round(_fps, 2));
-            Console.WriteLine("Rendering duration: " + _renderingCalculation + "ms");
 
-            //render
+            //Console.Clear();
+            //Console.WriteLine("FPS: " + Math.Round(_fps, 2));
+            //Console.WriteLine("Rendering duration: " + _renderingCalculation + "ms");
+
             Render();
         }
 
