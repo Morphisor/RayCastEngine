@@ -47,7 +47,6 @@
   <ItemGroup>
     <Compile Include="Components\Animation.cs" />
     <Compile Include="Components\Camera.cs" />
-    <Compile Include="Components\PathFinding.cs" />
     <Compile Include="Components\Movement.cs" />
     <Compile Include="Components\Position.cs" />
     <Compile Include="EntityManager.cs" />
