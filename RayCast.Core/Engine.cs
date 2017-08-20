@@ -144,9 +144,7 @@ namespace RayCast.Core
         {
             _fps = 1 / e.Time;
 
-            //Console.Clear();
-            //Console.WriteLine("FPS: " + Math.Round(_fps, 2));
-            //Console.WriteLine("Rendering duration: " + _renderingCalculation + "ms");
+            Title = $"RayCastEngine - (FPS: {Math.Round(_fps, 2)}) (Rendering duration: {_renderingCalculation}ms)";
 
             Render();
         }
