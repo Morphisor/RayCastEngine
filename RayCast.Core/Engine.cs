@@ -42,6 +42,7 @@ namespace RayCast.Core
 
         private AnimationSystem _animationSystem;
         private PathFindingSystem _pathFindingSystem;
+        private HitDetectionSystem _hitDetectionSystem;
 
         private Textures _textures;
 
@@ -50,7 +51,6 @@ namespace RayCast.Core
 
         private Entity _player;
         private Entity _camera;
-        private Weapon _weapon;
 
         private List<Entity> _sprites;
 
@@ -73,12 +73,14 @@ namespace RayCast.Core
             _resourceManager.ReadResourceFile("testlevel");
             _worldMap = _resourceManager.WorldMap;
             _textures = _resourceManager.Textures; 
-            _weapon = new Weapon(200, 200, new int[] { 15 });
 
             _player = _manager.CreateEntity(EntityType.Player);
             var playerPosition =_manager.CreateComponent<Position>(_player.Id);
             var playerMovement = _manager.CreateComponent<Movement>(_player.Id);
+            var weapon = _manager.CreateComponent<PlayerWeapon>(_player.Id);
+
             playerPosition.SetPosition(22, 12, -1, 0);
+            weapon.InitWeapon(200, 200, new int[] { 15 });
 
             _camera = _manager.CreateEntity();
             var cameraComponent = _manager.CreateComponent<Camera>(_camera.Id);
@@ -108,6 +110,9 @@ namespace RayCast.Core
             _pathFindingSystem = new PathFindingSystem(_manager, _worldMap);
             _pathFindingSystem.Initialize();
 
+            _hitDetectionSystem = new HitDetectionSystem(_manager);
+            _hitDetectionSystem.Initialize();
+
             _spriteNumber = _sprites.Count;
 
             //setup input
@@ -135,6 +140,7 @@ namespace RayCast.Core
                 UpdatePlayerPosition();
                 _animationSystem.Update();
                 _pathFindingSystem.Update();
+                _hitDetectionSystem.Update();
 
                 _timeFromLastUpdate = 0;
             }
@@ -153,6 +159,7 @@ namespace RayCast.Core
         {
 
             var playerMovement = _player.GetComponent<Movement>();
+            var weapon = _player.GetComponent<PlayerWeapon>();
 
             if (e.Key == Key.W)
                 playerMovement.MovingState = MovingState.Forward;
@@ -166,17 +173,24 @@ namespace RayCast.Core
             if (e.Key == Key.A)
                 playerMovement.TurningState = TurningState.Left;
 
+            if (e.Key == Key.Space)
+                weapon.IsShooting = true;
+
         }
 
         protected void KeyboardKeyUp(object sender, KeyboardKeyEventArgs e)
         {
             var playerMovement = _player.GetComponent<Movement>();
+            var weapon = _player.GetComponent<PlayerWeapon>();
 
             if (e.Key == Key.A || e.Key == Key.D)
                 playerMovement.TurningState = TurningState.Idle;
 
             if (e.Key == Key.W || e.Key == Key.S)
                 playerMovement.MovingState = MovingState.Idle;
+
+            if (e.Key == Key.Space)
+                weapon.IsShooting = false;
         }
 
         private void Render()
@@ -202,13 +216,14 @@ namespace RayCast.Core
 
         private void DrawWeapon()
         {
-            if (_weapon.IsShooting)
-                _weapon.UpdateNextFrame();
+            var weapon = _player.GetComponent<PlayerWeapon>();
+            if (weapon.IsShooting)
+                weapon.UpdateNextFrame();
 
-            int startX = (_viewPort.Width / 2) - (_weapon.Width / 2);
-            int endX = (_viewPort.Width / 2) + (_weapon.Width / 2);
+            int startX = (_viewPort.Width / 2) - (weapon.Width / 2);
+            int endX = (_viewPort.Width / 2) + (weapon.Width / 2);
 
-            int startY = _viewPort.Height - _weapon.Height;
+            int startY = _viewPort.Height - weapon.Height;
             int endY = _viewPort.Height;
 
             int texY = 0;
@@ -221,7 +236,7 @@ namespace RayCast.Core
                     Pixel pixelToDraw = new Pixel();
                     pixelToDraw.Y = y;
                     pixelToDraw.X = x;
-                    pixelToDraw.Color = _textures[_weapon.GetCurrentFrame()][_weapon.Width * texY+ texX].Color; //get current color from the texture
+                    pixelToDraw.Color = _textures[weapon.GetCurrentFrame()][weapon.Width * texY+ texX].Color; //get current color from the texture
                     if (pixelToDraw.Color != Color.FromArgb(152, 0, 136)) _drawingBuffer[_viewPort.Height * x + y] = pixelToDraw;
                     texY++;
                 }
@@ -259,13 +274,13 @@ namespace RayCast.Core
 
             for (int x = 0; x < _viewPort.Width; x++)
             {
-                DrawVerticalLine(x, spriteOrder, spriteDistance);
+                DrawVerticalLine(x);
             }
             //SPRITE CASTING
             DrawSprites(spriteOrder, spriteDistance);
         }
 
-        private void DrawVerticalLine(int x, int[] spriteOrder, double[] spriteDistance)
+        private void DrawVerticalLine(int x)
         {
             var playerPosition = _player.GetComponent<Position>();
             var camera = _camera.GetComponent<Camera>();

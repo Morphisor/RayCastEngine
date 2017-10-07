@@ -48,6 +48,7 @@
     <Compile Include="Components\Animation.cs" />
     <Compile Include="Components\Camera.cs" />
     <Compile Include="Components\Movement.cs" />
+    <Compile Include="Components\PlayerWeapon.cs" />
     <Compile Include="Components\Position.cs" />
     <Compile Include="EntityManager.cs" />
     <Compile Include="Enums\EntityType.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Primitives\Textures.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Systems\AnimationSystem.cs" />
+    <Compile Include="Systems\HitDetectionSystem.cs" />
     <Compile Include="Systems\PathFindingSystem.cs" />
     <Compile Include="Systems\SystemBase.cs" />
     <Compile Include="Utils\ConfigurationManager.cs" />
