@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RayCast.Core.Models;
 using RayCast.Core.Enums;
+using RayCast.Core.Components;
 
 namespace RayCast.Core.Systems
 {
@@ -12,6 +13,8 @@ namespace RayCast.Core.Systems
     {
         private EntityManager _manager;
         private Entity _player;
+
+
 
         public HitDetectionSystem(EntityManager manager)
         {
@@ -29,6 +32,19 @@ namespace RayCast.Core.Systems
         public override void Update()
         {
             
+        }
+
+        public void DamageEnemy(Entity enemyHit)
+        {
+            var playerWeapon = _player.GetComponent<PlayerWeapon>();
+            var enemyStats = enemyHit.GetComponent<EnemyStats>();
+            enemyStats.Life -= playerWeapon.Damage;
+
+            if (enemyStats.Life <= 0)
+            {
+
+            }
+
         }
 
         public override void OnComponentCreated(OnCreateComponentArgs e)

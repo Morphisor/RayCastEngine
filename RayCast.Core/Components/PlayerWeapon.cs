@@ -11,7 +11,12 @@ namespace RayCast.Core.Components
     {
         public int Width { get; set; }
         public int Height { get; set; }
+
         public bool IsShooting { get; set; }
+        public int Damage { get; set; }
+
+        public int HitMarginLeft { get; set; }
+        public int HitMarginRight { get; set; }
 
         private int[] _textureIds;
         private int _currentFrame;
@@ -19,11 +24,16 @@ namespace RayCast.Core.Components
 
         public PlayerWeapon() { }
 
-        public void InitWeapon(int width, int height, int[] texturesIds)
+        public void InitWeapon(int width, int height, int[] texturesIds, int viewPortX)
         {
             this.Width = width;
             this.Height = height;
+
+            this.HitMarginLeft = (viewPortX / 2) - 10;
+            this.HitMarginRight = (viewPortX / 2) + 10;
+
             this.IsShooting = false;
+            this.Damage = 50;
 
             this._textureIds = texturesIds;
             this._frameCount = _textureIds.Length;

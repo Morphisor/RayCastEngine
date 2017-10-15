@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Components\Animation.cs" />
     <Compile Include="Components\Camera.cs" />
+    <Compile Include="Components\EnemyStats.cs" />
     <Compile Include="Components\Movement.cs" />
     <Compile Include="Components\PlayerWeapon.cs" />
     <Compile Include="Components\Position.cs" />
@@ -60,7 +61,6 @@
     <Compile Include="Models\OnCreateComponentArgs.cs" />
     <Compile Include="Models\Entity.cs" />
     <Compile Include="Models\OnDestroyComponentArgs.cs" />
-    <Compile Include="Models\Weapon.cs" />
     <Compile Include="Primitives\Pixel.cs" />
     <Compile Include="Primitives\Ray.cs" />
     <Compile Include="Components\SpriteComponent.cs" />

@@ -80,7 +80,7 @@ namespace RayCast.Core
             var weapon = _manager.CreateComponent<PlayerWeapon>(_player.Id);
 
             playerPosition.SetPosition(22, 12, -1, 0);
-            weapon.InitWeapon(200, 200, new int[] { 15 });
+            weapon.InitWeapon(200, 200, new int[] { 15 }, _windowSize.Width - 260);
 
             _camera = _manager.CreateEntity();
             var cameraComponent = _manager.CreateComponent<Camera>(_camera.Id);
@@ -103,6 +103,7 @@ namespace RayCast.Core
             }
 
             _sprites[0].EntityType = EntityType.Enemy;
+            _sprites[0].CreateComponent<EnemyStats>();
 
             _animationSystem = new AnimationSystem(_manager);
             _animationSystem.Initialize();
@@ -525,6 +526,10 @@ namespace RayCast.Core
                             pixelToDraw.Color = _textures[spriteComponent.Texture][_textures.TexturesWidth * texY + texX].Color; //get current color from the texture
                             if (pixelToDraw.Color != Color.FromArgb(152, 0, 136)) _drawingBuffer[_viewPort.Height * stripe + y] = pixelToDraw;
                         }
+
+                        var weapon = _player.GetComponent<PlayerWeapon>();
+                        if (_sprites[spriteOrder[i]].EntityType == EntityType.Enemy && weapon.IsShooting && stripe > weapon.HitMarginLeft && stripe < weapon.HitMarginRight )
+                            _hitDetectionSystem.DamageEnemy(_sprites[spriteOrder[i]]);
                     }
                 }
             }
