@@ -96,7 +96,7 @@ namespace RayCast.Core
                 if (_resourceManager.AnimatedSprites.ContainsKey(Array.IndexOf(_resourceManager.Sprites, sprite)))
                 {
                     var animation = _manager.CreateComponent<Animation>(spriteEntity.Id);
-                    animation.InitAnimation(_resourceManager.AnimatedSprites[Array.IndexOf(_resourceManager.Sprites, sprite)]);
+                    animation.InitAnimation(_resourceManager.AnimatedSprites[Array.IndexOf(_resourceManager.Sprites, sprite)], AnimationType.Movement);
                 }
 
                 _sprites.Add(spriteEntity);

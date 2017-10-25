@@ -52,6 +52,7 @@
     <Compile Include="Components\PlayerWeapon.cs" />
     <Compile Include="Components\Position.cs" />
     <Compile Include="EntityManager.cs" />
+    <Compile Include="Enums\AnimationType.cs" />
     <Compile Include="Enums\EntityType.cs" />
     <Compile Include="Enums\MovingState.cs" />
     <Compile Include="Enums\TurningState.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Systems\AnimationSystem.cs" />
     <Compile Include="Systems\HitDetectionSystem.cs" />
     <Compile Include="Systems\PathFindingSystem.cs" />
+    <Compile Include="Systems\StateMachineSystem.cs" />
     <Compile Include="Systems\SystemBase.cs" />
     <Compile Include="Utils\ConfigurationManager.cs" />
     <Compile Include="Utils\Draw.cs" />
