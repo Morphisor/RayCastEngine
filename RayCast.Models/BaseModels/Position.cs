@@ -1,13 +1,10 @@
-﻿using RayCast.Core.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace RayCast.Core.Components
+namespace RayCast.Models.BaseModels
 {
-    public class Position : IComponent
+    public class Position
     {
         //start positions
         public double PosX { get; set; }
@@ -17,9 +14,7 @@ namespace RayCast.Core.Components
         public double DirX { get; set; }
         public double DirY { get; set; }
 
-        public Position() { }
-
-        public void SetPosition (double posX, double posY, double dirX, double dirY)
+        public Position(double posX, double posY, double dirX, double dirY)
         {
             this.PosX = posX;
             this.PosY = posY;

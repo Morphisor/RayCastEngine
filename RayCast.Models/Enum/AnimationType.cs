@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RayCast.Core.Enums
+namespace RayCast.Models.Enums
 {
-    public enum TurningState
+    public enum AnimationType
     {
-        Idle,
-        Left,
-        Right
+        Movement,
+        Shooting,
+        Damage,
+        Death
     }
 }

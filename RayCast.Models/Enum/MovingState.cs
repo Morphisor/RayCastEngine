@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RayCast.Core.Interfaces
+namespace RayCast.Models.Enums
 {
-    public interface IComponent
+    public enum MovingState
     {
-
+        Idle,
+        Forward,
+        Backward
     }
 }

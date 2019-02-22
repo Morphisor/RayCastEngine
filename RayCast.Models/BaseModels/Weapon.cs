@@ -1,13 +1,10 @@
-﻿using RayCast.Core.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace RayCast.Core.Components
+namespace RayCast.Models.BaseModels
 {
-    class PlayerWeapon : IComponent
+    public class Weapon
     {
         public int Width { get; set; }
         public int Height { get; set; }
@@ -22,9 +19,7 @@ namespace RayCast.Core.Components
         private int _currentFrame;
         private int _frameCount;
 
-        public PlayerWeapon() { }
-
-        public void InitWeapon(int width, int height, int[] texturesIds, int viewPortX)
+        public Weapon(int width, int height, int[] texturesIds, int viewPortX)
         {
             this.Width = width;
             this.Height = height;

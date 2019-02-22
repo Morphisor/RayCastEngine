@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RayCast.Core", "RayCast.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RayCastEngine.NoConsole", "RayCastEngine.NoConsole\RayCastEngine.NoConsole.csproj", "{45C90B95-8242-4463-A7C7-76A4C250CF32}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RayCast.Models", "RayCast.Models\RayCast.Models.csproj", "{31B5BCA3-4382-4D17-A9A5-05A71EBF110C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{45C90B95-8242-4463-A7C7-76A4C250CF32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45C90B95-8242-4463-A7C7-76A4C250CF32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45C90B95-8242-4463-A7C7-76A4C250CF32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31B5BCA3-4382-4D17-A9A5-05A71EBF110C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31B5BCA3-4382-4D17-A9A5-05A71EBF110C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31B5BCA3-4382-4D17-A9A5-05A71EBF110C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31B5BCA3-4382-4D17-A9A5-05A71EBF110C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

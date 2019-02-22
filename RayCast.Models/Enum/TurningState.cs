@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RayCast.Core.Enums
+namespace RayCast.Models.Enums
 {
-    public enum MovingState
+    public enum TurningState
     {
         Idle,
-        Forward,
-        Backward
+        Left,
+        Right
     }
 }

@@ -1,5 +1,6 @@
-﻿using RayCast.Core.Components;
-using RayCast.Core.Primitives;
+﻿using RayCast.Core.Primitives;
+using RayCast.Models;
+using RayCast.Models.BaseModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +24,7 @@ namespace RayCast.Core.Utils
 
         public int[,] WorldMap { get; set; }
         public Textures Textures { get; set; }
-        public Sprite[] Sprites { get; set; }
+        public Prop[] Props { get; set; }
         public Dictionary<int, int[]> AnimatedSprites{ get; set; }
 
         private static ResourceManager _instance;
@@ -146,7 +147,7 @@ namespace RayCast.Core.Utils
         private void ParseSprites(List<string> listToParse)
         {
             int spriteCount = listToParse.Count;
-            Sprites = new Sprite[spriteCount];
+            Props = new Prop[spriteCount];
 
             int i = 0;
             foreach (string line in listToParse)
@@ -160,8 +161,10 @@ namespace RayCast.Core.Utils
                 double y = double.Parse(splitted[1].Trim());
                 int textureIndex = int.Parse(splitted[2].Trim());
 
-                Sprite spriteToAdd = new Sprite(x, y, textureIndex);
-                Sprites[i] = spriteToAdd;
+                Prop propToAdd = new Prop();
+                propToAdd.Position = new Position(x, y, 0, 0);
+                propToAdd.Sprite = new Sprite(textureIndex);
+                Props[i] = propToAdd;
                 i++;
             }
 

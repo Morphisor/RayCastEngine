@@ -1,14 +1,11 @@
-﻿using RayCast.Core.Enums;
-using RayCast.Core.Interfaces;
+﻿using RayCast.Models.Enums;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace RayCast.Core.Components
+namespace RayCast.Models.BaseModels
 {
-    public class Movement : IComponent
+    public class Movement
     {
         public MovingState MovingState { get; set; }
         public TurningState TurningState { get; set; }
