@@ -120,9 +120,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\RayCast.Models\RayCast.Models.csproj">
       <Project>{31b5bca3-4382-4d17-a9a5-05a71ebf110c}</Project>
