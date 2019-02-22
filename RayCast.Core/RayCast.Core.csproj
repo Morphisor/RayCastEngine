@@ -46,7 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enums\EntityType.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Primitives\Pixel.cs" />
     <Compile Include="Primitives\Ray.cs" />

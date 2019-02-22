@@ -10,7 +10,6 @@ using OpenTK.Input;
 using RayCast.Core.Utils;
 using System.Windows.Forms;
 using RayCast.Core.Primitives;
-using RayCast.Core.Enums;
 using System.Runtime;
 using System.Diagnostics;
 using RayCast.Models;
