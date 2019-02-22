@@ -199,8 +199,8 @@ namespace RayCast.Core
             DrawWeapon();
             
             Draw.DrawPixels(_drawingBuffer);
-            Array.Clear(_drawingBuffer, 0, _drawingBuffer.Length);
-            Array.Clear(_zBuffer, 0, _zBuffer.Length);
+            //Array.Clear(_drawingBuffer, 0, _drawingBuffer.Length);
+            //Array.Clear(_zBuffer, 0, _zBuffer.Length);
 
             _renderingCalculation = renderTime.ElapsedMilliseconds;
             renderTime.Restart();
