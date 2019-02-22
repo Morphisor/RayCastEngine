@@ -15,6 +15,10 @@ namespace RayCast.Models
         public override void Update(params object[] arguments)
         {
             base.Update(arguments);
+
+            if (!Sprite.IsVisible)
+                return;
+
             Player player = arguments[0] as Player;
             int[,] worldMap = arguments[1] as int[,];
 

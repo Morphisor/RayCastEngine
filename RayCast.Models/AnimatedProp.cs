@@ -14,8 +14,13 @@ namespace RayCast.Models
         public override void Update(params object[] arguments)
         {
             base.Update(arguments);
-            Animation.Update();
-            Sprite.Texture = Animation.TextureIds[Animation.CurrentFrame];
+            
+            if (Sprite.IsVisible)
+            {
+                Animation.Update();
+                Sprite.Texture = Animation.TextureIds[Animation.CurrentFrame];
+            }
+
         }
     }
 }
