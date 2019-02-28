@@ -1,4 +1,4 @@
-﻿using RayCast.Core.Primitives;
+﻿using RayCast.Models.BaseModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace RayCast.Models.Enum
 {
-    public enum MovingState
+    public enum EnemyState
     {
+        Moving,
+        Shoting,
         Idle,
-        Forward,
-        Backward
+        Dead
     }
 }

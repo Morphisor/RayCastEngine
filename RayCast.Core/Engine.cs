@@ -183,8 +183,9 @@ namespace RayCast.Core
             if (e.Key == Key.W || e.Key == Key.S)
                 playerMovement.MovingState = MovingState.Idle;
 
-            if (e.Key == Key.Space)
-                weapon.IsShooting = false;
+            //NOT NEEDED THE SHOOTING STATE WILL RESET ITSELF AFTER THE ANIMATION
+            //if (e.Key == Key.Space)
+            //    weapon.IsShooting = false;
         }
 
         private void Render()

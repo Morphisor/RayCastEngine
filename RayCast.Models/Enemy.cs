@@ -1,11 +1,9 @@
-﻿using RayCast.Core.Primitives;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using RayCast.Models.BaseModels;
+using RayCast.Models.Enum;
 
 namespace RayCast.Models
 {
-    public class Enemy : AnimatedProp
+    public class Enemy : StatefulProp<EnemyState>
     {
         private const double MOVEMENT_SPEED = 0.06;
         private const double ROTATION_SPEED = 0.15;

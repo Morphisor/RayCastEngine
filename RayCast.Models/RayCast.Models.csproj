@@ -52,11 +52,13 @@
     <Compile Include="BaseModels\Weapon.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="Enum\AnimationType.cs" />
+    <Compile Include="Enum\EnemyState.cs" />
     <Compile Include="Enum\MovingState.cs" />
     <Compile Include="Enum\TurningState.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Prop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StatefulProp.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
