@@ -1,4 +1,5 @@
-﻿using RayCast.Models.Enums;
+﻿
+using RayCast.Models.Enum;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -1,4 +1,6 @@
-﻿using RayCast.Models.Enums;
+﻿
+
+using RayCast.Models.Enum;
 
 namespace RayCast.Models.BaseModels
 {
