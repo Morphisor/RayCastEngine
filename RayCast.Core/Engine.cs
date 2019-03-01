@@ -14,7 +14,7 @@ using System.Runtime;
 using System.Diagnostics;
 using RayCast.Models;
 using RayCast.Models.BaseModels;
-using RayCast.Models.Enums;
+using RayCast.Models.Enum;
 
 namespace RayCast.Core
 {
@@ -96,7 +96,7 @@ namespace RayCast.Core
             _props[0] = new Enemy();
             _props[0].Position = enemyProp.Position;
             _props[0].Sprite = enemyProp.Sprite;
-            (_props[0] as Enemy).Animation = enemyProp.Animation;
+            (_props[0] as Enemy).CurrentAnimation = enemyProp.Animation;
 
             _spriteNumber = _props.Count;
 
@@ -198,7 +198,7 @@ namespace RayCast.Core
             DrawMap();
             DrawMinimap(_mimiMapPosition, 10);
             DrawWeapon();
-            
+
             Draw.DrawPixels(_drawingBuffer);
 
             _renderingCalculation = renderTime.ElapsedMilliseconds;
@@ -229,7 +229,7 @@ namespace RayCast.Core
                     Pixel pixelToDraw = new Pixel();
                     pixelToDraw.Y = y;
                     pixelToDraw.X = x;
-                    pixelToDraw.Color = _textures[weapon.GetCurrentFrame()][weapon.Width * texY+ texX].Color; //get current color from the texture
+                    pixelToDraw.Color = _textures[weapon.GetCurrentFrame()][weapon.Width * texY + texX].Color; //get current color from the texture
                     if (pixelToDraw.Color != Color.FromArgb(152, 0, 136)) _drawingBuffer[_viewPort.Height * x + y] = pixelToDraw;
                     texY++;
                 }
@@ -283,7 +283,7 @@ namespace RayCast.Core
 
             double perpWallDist;
             Point step = FindRayCastHit(ray);
-            
+
             //Calculate distance projected on camera direction
             if (ray.Side == 0) perpWallDist = (ray.MapX - ray.RayPosX + (1 - step.X) / 2) / ray.RayDirX;
             else perpWallDist = (ray.MapY - ray.RayPosY + (1 - step.Y) / 2) / ray.RayDirY;
@@ -499,7 +499,6 @@ namespace RayCast.Core
                 //loop through every vertical stripe
                 for (int stripe = drawStartX; stripe < drawEndX; stripe++)
                 {
-                    int texX = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * _textures.TexturesWidth / spriteWidth) / 256;
 
                     //1) it's in front of camera plane so you don't see things behind you
                     //2) it's on the screen (left)
@@ -507,6 +506,7 @@ namespace RayCast.Core
                     //4) ZBuffer, with perpendicular distance
                     if (transformY > 0 && stripe > 0 && stripe < _viewPort.Width && transformY < _zBuffer[stripe])
                     {
+                        int texX = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * _textures.TexturesWidth / spriteWidth) / 256;
                         spriteComponent.Sprite.IsVisible = true;
                         for (int y = drawStartY; y < drawEndY; y++) //for every pixel of the current stripe
                         {
@@ -520,7 +520,7 @@ namespace RayCast.Core
                         }
 
                         var weapon = _player.Weapon;
-                        if (_props[spriteOrder[i]] is Enemy && weapon.IsShooting && stripe > weapon.HitMarginLeft && stripe < weapon.HitMarginRight )
+                        if (_props[spriteOrder[i]] is Enemy && weapon.IsShooting && stripe > weapon.HitMarginLeft && stripe < weapon.HitMarginRight)
                         {
                             //HIT
                         }
