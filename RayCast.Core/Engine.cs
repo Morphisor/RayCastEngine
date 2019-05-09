@@ -201,8 +201,8 @@ namespace RayCast.Core
 
             Draw.DrawPixels(_drawingBuffer);
 
+            renderTime.Stop();
             _renderingCalculation = renderTime.ElapsedMilliseconds;
-            renderTime.Restart();
 
             SwapBuffers();
         }
