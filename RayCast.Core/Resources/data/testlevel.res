@@ -25,22 +25,22 @@
 2,2,2,2,1,2,2,2,2,2,2,1,2,2,2,5,5,5,5,5,5,5,5,5
 
 [TEXTURES (name, index, width, height)]
-redbrick.png, 0
-wood.png, 1
-mossy.png, 2
-purplestone.png, 3
-eagle.png, 4
-colorstone.png, 5
-greystone.png, 6
-bluestone.png, 7
-barrel.png, 8
-column.png, 9
-light.png, 10
-enemy1.png, 11
-enemy2.png, 12
-enemy3.png, 13
-enemy4.png, 14
-weapon1.png, 15, 200, 200
+walls\redbrick.png, 0
+walls\wood.png, 1
+walls\mossy.png, 2
+walls\purplestone.png, 3
+walls\eagle.png, 4
+walls\colorstone.png, 5
+walls\greystone.png, 6
+walls\bluestone.png, 7
+sprites\barrel.png, 8
+sprites\column.png, 9
+sprites\light.png, 10
+enemies\enemy1.png, 11
+enemies\enemy2.png, 12
+enemies\enemy3.png, 13
+enemies\enemy4.png, 14
+weapons\weapon1.png, 15, 200, 200
 
 [SPRITES (x, y, texture index)]
 20.5, 11.5, 10

@@ -65,58 +65,58 @@
     <Content Include="Resources\data\testlevel.res">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\barrel.png">
+    <Content Include="Resources\textures\sprites\barrel.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\bluestone.png">
+    <Content Include="Resources\textures\walls\bluestone.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\colorstone.png">
+    <Content Include="Resources\textures\walls\colorstone.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\column.png">
+    <Content Include="Resources\textures\sprites\column.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\eagle.png">
+    <Content Include="Resources\textures\walls\eagle.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\enemy1.png">
+    <Content Include="Resources\textures\enemies\enemy1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\enemy2.png">
+    <Content Include="Resources\textures\enemies\enemy2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\enemy3.png">
+    <Content Include="Resources\textures\enemies\enemy3.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\enemy4.png">
+    <Content Include="Resources\textures\enemies\enemy4.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\greystone.png">
+    <Content Include="Resources\textures\walls\greystone.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\light.png">
+    <Content Include="Resources\textures\sprites\light.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\mossy.png">
+    <Content Include="Resources\textures\walls\mossy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\purplestone.png">
+    <Content Include="Resources\textures\walls\purplestone.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\redbrick.png">
+    <Content Include="Resources\textures\walls\redbrick.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\steelbarrel.png">
+    <Content Include="Resources\textures\sprites\steelbarrel.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\tables.png">
+    <Content Include="Resources\textures\sprites\tables.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\weapon1.png">
+    <Content Include="Resources\textures\weapons\weapon1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\textures\wood.png">
+    <Content Include="Resources\textures\walls\wood.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
