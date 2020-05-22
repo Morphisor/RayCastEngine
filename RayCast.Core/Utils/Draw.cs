@@ -26,15 +26,12 @@ namespace RayCast.Core.Utils
 
             foreach (Pixel p in pixels)
             {
-                if (p != null)
+                if (p.Color != current)
                 {
-                    if (p.Color != current)
-                    {
-                        current = p.Color;
-                        GL.Color3(current);
-                    }
-                    GL.Vertex2(p.X, p.Y);
+                    current = p.Color;
+                    GL.Color3(current);
                 }
+
             }
             GL.End();
         }
@@ -46,7 +43,7 @@ namespace RayCast.Core.Utils
 
             foreach (Pixel p in pixels)
             {
-                result[index] = (p != null) ? p.Color.ToArgb() : Color.Black.ToArgb();
+                result[index] = p.Color.ToArgb();
                 index++;
             }
 

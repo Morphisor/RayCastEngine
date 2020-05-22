@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RayCast.Core.Primitives
 {
-    public class Pixel
+    public struct Pixel
     {
         public int X { get; set; }
         public int Y { get; set; }
