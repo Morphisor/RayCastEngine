@@ -31,7 +31,7 @@ namespace RayCast.Core.Utils
                     current = p.Color;
                     GL.Color3(current);
                 }
-
+                GL.Vertex2(p.X, p.Y);
             }
             GL.End();
         }
